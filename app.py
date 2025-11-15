@@ -3,10 +3,10 @@ import pandas as pd
 import random
 
 # -------------------------
-# Mock data for demonstration
+# 
 # -------------------------
 songs_data = [
-    {"Title": "Love Story", "Artist": "Taylor Swift", "Genre": "Pop", "Duration": "3:55"},
+    {"Title": "L", "Artist": "Taylor Swift", "Genre": "Pop", "Duration": "3:55"},
     {"Title": "Do I Wanna Know?", "Artist": "Arctic Monkeys", "Genre": "Indie Rock", "Duration": "4:33"},
     {"Title": "Bad Guy", "Artist": "Billie Eilish", "Genre": "Pop", "Duration": "3:14"},
     {"Title": "Blinding Lights", "Artist": "The Weeknd", "Genre": "Synthpop", "Duration": "3:20"},
