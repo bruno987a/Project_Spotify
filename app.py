@@ -73,12 +73,15 @@ if st.session_state.step >= 2 and st.session_state.playlist_imported:
     format_func=lambda x: f"*{x}*" if x=="None" else x,
     key="similarity")
 
-    mood = st.selectbox("Select mood:",
-    ["None", "Calm", "Energetic", "Happy", "Chill", "Sad"],
-    index=0,  # default selection is "None"
-    format_func=lambda x: f"*{x}*" if x=="None" else x,
-    key="mood")
-    length = st.slider("Select desired playlist length (songs):", 5, 30, 15, key="length")
+# Song selecetion for rating 
+
+   genre_map = ["Rock/Metal/Punk": 1, "Pop/Synth": 2, "Electronic/IDM": 3, "Hip-Hop/RnB/Funk": 4, 
+     "Jazz/Blues": 5, "Classical": 6, "Folk/Country/Americana": 7, "World/Reggae/Latin": 8,
+     "Experimental/Sound Art": 9, "Spoken/Soundtrack/Misc": 10]
+
+    key_genre = st.selectbox("Select Genre:", list(genre_map.keys()))
+    chosen_genre = genre_map[key_genre]
+    length = st.slider("Select desired playlist length (songs):", 5, 30, 15)
 
     if st.button("Confirm and Continue"):
         st.session_state.criteria_confirmed = True
@@ -91,15 +94,41 @@ if st.session_state.step >= 2 and st.session_state.playlist_imported:
 # -------------------------
 if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
     st.header("Step 3 – Quick song evaluation")
-    st.write("Please like or dislike the following candidate songs:")
+    st.write("Please rate the following songs:")
+    
+    import pandas as pd
+    from ast import literal_eval
+    from random import choice
+    
+    gmi = pd.read_csv("data/genre_with_main_identity.csv")
+    s_genres = gmi[["genre_id", "main_category_id"]]
 
-    # Display songs with inline rating buttons
+    t = pd.read_csv("data/tracks_small.csv")
+    s_t = pd.DataFrame({"track_id": t["track_id"], "genres_all": t["genres_all"].fillna("[]").apply(literal_eval), "title": t["title"], "artist": t["artist"]})
+
+    def rand_track_genre(main_cat_id, n):
+        genre_ids = list(set(s_genres.loc[s_genres["main_category_id"] == main_cat_id, "genre_id"]))
+    
+        rand_gen_l = [choice(genre_ids) for dig in range(n)]
+        
+        p_to_rate = []
+    
+        for g_id in rand_gen_l:
+            poss_songs = s_t[s_t["genres_all"].apply(lambda ids: g_id in ids)]
+            p_to_rate.append(poss_songs.sample(1))
+            to_rate = pd.concat(p_to_rate)
+        return to_rate
+
+    # Display songs with rating buttons
+    if "candidate_songs" not in st.session_state: 
+        st.session_state.candidate_songs = rand_track_genre(chosen_genre, 5) # hier noch auswahl der anzahl songs ermöglichen evtl.
+
+    songs_df = st.session_state.candidate_songs
+    
     for idx, song in enumerate(candidate_songs):
         cols = st.columns([3, 3, 2, 2, 2])
-        cols[0].write(song["Title"])
-        cols[1].write(song["Artist"])
-        cols[2].write(song["Genre"])
-        cols[3].write(song["Mood"])
+        cols[0].write(song["title"])
+        cols[1].write(song["artist"])
         rating = cols[4].radio(" ", ["👍", "👎"], horizontal=True, key=f"song_{idx}")
         st.session_state.ratings[song["Title"]] = rating
 
