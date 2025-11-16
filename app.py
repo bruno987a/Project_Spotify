@@ -93,7 +93,7 @@ if st.session_state.step >= 2 and st.session_state.playlist_imported:
 
     key_genre = st.selectbox("Select Genre:", list(genre_map.keys()))
     chosen_genre = genre_map[key_genre]
-    length = st.slider("Select desired playlist length (songs):", 5, 30, 15)
+    n_desired_songs = st.slider("Select desired playlist length (songs):", 5, 30, 15)
 
     if st.button("Confirm and Continue"):
         st.session_state.criteria_confirmed = True
@@ -276,7 +276,6 @@ def recommend(group_vec, n_songs):
     return track_ids[idx[0]]
 
 # final function call
-n_desired_songs = 20 # Anzahl Songs kannst du später an Streamlit binden @Bruno variable kannst du an Button in Auswahl binden
 recommended_ids = recommend(group_vector, n_desired_songs)
 
 
