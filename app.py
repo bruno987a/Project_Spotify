@@ -198,19 +198,19 @@ knn_model.fit(X)
 rated_track_ids = songs_df["track_id"].tolist()
 
 # Ratings from streamlit per user
-ratings_user1 = rating.user1   # numbers from 1-5
-ratings_user2 = rating.user2   # gleiche Länge wie rated_track_ids??
-ratings_user3 = rating.user3   
-ratings_user4 = rating.user4
-ratings_user5 = rating.user5
+ratings_user1 = rating.user1   # numbers from 1-5, @Loris vielleicht noch Name anpassen damits deine Zahlen übernimmt
+#ratings_user2 = rating.user2   # gleiche Länge wie rated_track_ids??
+#ratings_user3 = rating.user3   # 
+#ratings_user4 = rating.user4
+#ratings_user5 = rating.user5
 
 # dictionary of "user" - rating pairs
 user_ratings = {
     "user1": ratings_user1,
-    "user2": ratings_user2,
-    "user3": ratings_user3,
-    "user4": ratings_user4,
-    "user5": ratings_user5
+ #   "user2": ratings_user2,
+ #   "user3": ratings_user3,
+ #   "user4": ratings_user4,
+ #   "user5": ratings_user5
     # add more users if necessary
     }
 
