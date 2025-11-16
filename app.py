@@ -9,13 +9,13 @@ from sklearn.neighbors import NearestNeighbors #Machine Learning algorithm @Lore
 """ Define path for local and project data for test version.
     Can later be adapted for final version."""
 
-LOCAL_DATA_DIR = Path("/Users/alexbuser/Library/Mobile Documents/com~apple~CloudDocs/02_Business/04_IT/01_Cobrazähmerei/10_Fundamentals of CS HSG/Group project/data")
+LOCAL_DATA_DIR = Path("/Users/alexbuser/Library/Mobile Documents/com~apple~CloudDocs/02_Business/04_IT/01_Cobrazähmerei/10_Fundamentals of CS HSG/Group project/data") #local data on Alex's computer
 
 tracks = pd.read_csv(LOCAL_DATA_DIR / "tracks.csv", index_col=0, low_memory=False)
 features = pd.read_csv(LOCAL_DATA_DIR / "features.csv", index_col=0, low_memory=False)
 
-BASE_DIR = Path(__path__).resolve().parent
-PROJECT_DATA_DIR = DATA_DIR / "data"
+BASE_DIR = Path(__path__).resolve().parent #path to parent file or our project
+PROJECT_DATA_DIR = DATA_DIR / "data" #path to data samples in our project
 
 genres = pd.read_csv(PROJECT_DATA_DIR / "genre_with_main_identity.csv")
 
