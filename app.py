@@ -193,14 +193,14 @@ knn_model = NearestNeighbors(
 knn_model.fit(X)
 """
 
-# Rated songs in same order as ratings -> CHECKEN, ob sie track_ids enthalten!
-# Annahme: Songs zur Bewertung in chronologischer Abfolge unter songs_df abgespeichert.
+# Rated songs in form of a list in the same order as ratings
+# Annahme: Songs zur Bewertung in chronologischer Abfolge unter songs_df abgespeichert. sollte stimmen
 rated_track_ids = songs_df["track_id"].tolist()
 
 # Ratings from streamlit per user
-ratings_user1 = rating.user1   # numbers from 1-5, @Loris vielleicht noch Name anpassen damits deine Zahlen übernimmt
-#ratings_user2 = rating.user2   # gleiche Länge wie rated_track_ids??
-#ratings_user3 = rating.user3   # 
+ratings_user1 = list(st.session_state.ratings.values())   # numbers from 1-5, as a list for each song 
+#ratings_user2 = rating.user2   # activate them
+#ratings_user3 = rating.user3   # @Loris vielleicht noch Name anpassen damits deine Zahlen übernimmt
 #ratings_user4 = rating.user4
 #ratings_user5 = rating.user5
 
@@ -216,29 +216,21 @@ user_ratings = {
 
 # define function to create seed vector per user
 
-def build_user_profile(ratings_list, rated_track_ids, features_df):
+def build_user_profile(ratings_list, rated_track_ids, features_15_scaled):
     """
     ratings_list: Liste von Ratings (1–5), gleiche Reihenfolge wie rated_track_ids
     rated_track_ids: Liste der track_ids aus songs_df
-    features_df: features_15_scaled (index = track_id)
+    features_df: features_15_scaled (index = track_id), muss ev. noch assigned werden
     """
+
+    # Convert ratings to Numpy arrays
     ratings = np.asarray(ratings_list, dtype=float)
 
-    # Use only songs with Rating > 0
-    mask = ratings > 0
-    if not mask.any():
-        raise ValueError("User did not rate any songs.")
-
-    used_ratings = ratings[mask]
-    used_ids = [tid for tid, m in zip(rated_track_ids, mask) if m]
-
-    # get vectors of rated songs
-    vecs = features_df.loc[used_ids].values          # Shape: (n_rated, 15)
+    # Set vectors of rated songs
+    vecs = features_15_scaled.loc[used_ids].values          # Shape: (n_rated, 15)
 
     # Weighted Average (Ratings = weights)
-    weights = used_ratings[:, None]                  # Shape: (n_rated, 1)
-    weighted_sum = (vecs * weights).sum(axis=0)
-    profile_vector = weighted_sum / weights.sum()
+    profile_vector = np.average(vecs, axis=0, weights=ratings)
 
     return profile_vector    # Shape: (15,)
 
@@ -246,7 +238,7 @@ def build_user_profile(ratings_list, rated_track_ids, features_df):
 
 user_profiles = []
 
-for user_name, ratings_list in user_ratings.items():
+for ratings_list in user_ratings.items():
     profile = build_user_profile(ratings_list, rated_track_ids, features_15_scaled)
     user_profiles.append(profile)
 
