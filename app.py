@@ -5,6 +5,7 @@ import random
 from pathlib import Path
 from sklearn.neighbors import NearestNeighbors #Machine Learning algorithm @Lorenz
 
+# Vecor definition with computed features
 
 """ Define path for local and project data for test version.
     Can later be adapted for final version."""
