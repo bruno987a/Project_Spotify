@@ -1,8 +1,10 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from pathlib import Path
 import random
+from pathlib import Path
+from sklearn.neighbors import NearestNeighbors #Machine Learning algorithm @Lorenz
+
 
 # -------------------------
 # 
