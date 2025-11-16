@@ -32,13 +32,7 @@ songs_data = [
     {"Title": "Levitating", "Artist": "Dua Lipa", "Genre": "Pop", "Duration": "3:23"},
 ]
 
-candidate_songs = [
-    {"Title": "Sunflower", "Artist": "Post Malone", "Genre": "Pop", "Mood": "Happy"},
-    {"Title": "Lose Yourself", "Artist": "Eminem", "Genre": "Rap", "Mood": "Energetic"},
-    {"Title": "Chill Bill", "Artist": "Rob $tone", "Genre": "Hip Hop", "Mood": "Chill"},
-    {"Title": "Ocean Eyes", "Artist": "Billie Eilish", "Genre": "Pop", "Mood": "Calm"},
-    {"Title": "Smells Like Teen Spirit", "Artist": "Nirvana", "Genre": "Rock", "Mood": "Energetic"},
-]
+candidate_songs = []
 
 # -------------------------
 # Streamlit app setup
