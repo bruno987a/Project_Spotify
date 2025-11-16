@@ -238,6 +238,17 @@ def build_user_profile(ratings_list, rated_track_ids, features_df):
 
     return profile_vector    # Shape: (15,)
 
+# Combine user vectors to group vector
+
+user_profiles = []
+
+for user_name, ratings_list in user_ratings.items():
+    profile = build_user_profile(ratings_list, rated_track_ids, features_15_scaled)
+    user_profiles.append(profile)
+
+# Group music taste = average of user profiles
+group_profile = np.mean(user_profiles, axis=0)   # Shape: (15,)
+
 
 
 
