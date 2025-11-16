@@ -15,7 +15,7 @@ tracks = pd.read_csv(LOCAL_DATA_DIR / "tracks.csv", index_col=0, low_memory=Fals
 features = pd.read_csv(LOCAL_DATA_DIR / "features.csv", index_col=0, low_memory=False)
 
 BASE_DIR = Path(__path__).resolve().parent #path to parent file or our project
-PROJECT_DATA_DIR = DATA_DIR / "data" #path to data samples in our project
+PROJECT_DATA_DIR = BASE_DIR / "data" #path to data samples in our project
 
 genres = pd.read_csv(PROJECT_DATA_DIR / "genre_with_main_identity.csv")
 
