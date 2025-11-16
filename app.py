@@ -16,8 +16,6 @@ PROJECT_DATA_DIR = BASE_DIR / "data" #path to data samples in our project
 
 tracks = pd.read_csv(PROJECT_DATA_DIR / "tracks_small.csv", index_col=0, low_memory=False)
 genres = pd.read_csv(PROJECT_DATA_DIR / "genre_with_main_identity.csv",)
-# features = pd.read_csv(LOCAL_DATA_DIR / "features_small.csv", index_col=0, low_memory=False)
-# -> activate, as soon as the reduced features file is in saved in data
 
 
 
