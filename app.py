@@ -234,15 +234,16 @@ def build_user_profile(ratings_list, rated_track_ids, features_15_scaled):
 
     return profile_vector    # Shape: (15,)
 
-# Combine user vectors to group vector
+# Collect all seed vector of users into a list
 
 user_profiles = []
 
-for ratings_list in user_ratings.items():
+for ratings_list in user_ratings.values():
     profile = build_user_profile(ratings_list, rated_track_ids, features_15_scaled)
     user_profiles.append(profile)
 
-# Group music taste = average of user profiles
+# Group vector representing music taste = average of user profiles
+
 group_profile = np.mean(user_profiles, axis=0)   # Shape: (15,)
 
 # Adjustment instruments for emphazising certain features
@@ -255,7 +256,7 @@ if feature_name_to_boost in feature_cols:
     idx = feature_cols.index(feature_name_to_boost)
     group_vector[idx] *= 1.5
 
-# can add multiple of these blocks for more leeway
+# can add multiple of these blocks for more control over algorithm
 
 # --- kNN-Setup  ---
 
@@ -265,7 +266,7 @@ track_ids = features_15_scaled.index.to_numpy()   # Track-IDs in the same order
 knn_model = NearestNeighbors(metric="cosine", n_neighbors=200)
 knn_model.fit(X)
 
-# --- simple function setup ---
+# Simple function design
 
 def recommend(group_vec, n_desired_songs):
     _, idx = knn_model.kneighbors(group_vec.reshape(1, -1), n_neighbors=n_desired_songs)
