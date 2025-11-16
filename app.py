@@ -153,6 +153,27 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
         st.session_state.step = 4
         st.success("Evaluation submitted! Proceed to Final Playlist.")
 
+# Vector definition with computed features
+
+features = pd.read_csv("features.csv", index_col=0)  # track_id as index
+
+feature_cols = [
+    "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
+    "mfcc_06_mean", "mfcc_07_mean", "mfcc_08_mean", "mfcc_09_mean", "mfcc_10_mean",
+    "rms_mean",
+    "tempo",
+    "spectral_centroid_mean",
+    "spectral_bandwidth_mean",
+    "chroma_var"
+]
+features_15 = features[feature_cols].copy()
+
+scaler = StandardScaler()
+X_15 = scaler.fit_transform(features_15)
+
+features_15_scaled = pd.DataFrame(X_15, index=features.index, columns=feature_cols)
+
+
 
 # -------------------------
 # STEP 4 — Final Playlist
@@ -186,22 +207,3 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
 
     st.button("Save Playlist to Spotify (coming soon)")
 
-# Vector definition with computed features
-
-features = pd.read_csv("features.csv", index_col=0)  # track_id as index
-
-feature_cols = [
-    "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
-    "mfcc_06_mean", "mfcc_07_mean", "mfcc_08_mean", "mfcc_09_mean", "mfcc_10_mean",
-    "rms_mean",
-    "tempo",
-    "spectral_centroid_mean",
-    "spectral_bandwidth_mean",
-    "chroma_var"
-]
-features_15 = features[feature_cols].copy()
-
-scaler = StandardScaler()
-X_15 = scaler.fit_transform(features_15)
-
-features_15_scaled = pd.DataFrame(X_15, index=features.index, columns=feature_cols)
