@@ -249,7 +249,60 @@ for user_name, ratings_list in user_ratings.items():
 # Group music taste = average of user profiles
 group_profile = np.mean(user_profiles, axis=0)   # Shape: (15,)
 
+# Adjustment instruments for emphazising certain features
 
+group_vector = group_profile.copy()
+
+# give more weight to one feature  (e.g. factor 1.5)
+feature_name_to_boost = "tempo"   # <- change as desired
+if feature_name_to_boost in feature_cols:
+    idx = feature_cols.index(feature_name_to_boost)
+    group_vector[idx] *= 1.5
+
+# can add multiple of these blocks for more leeway
+
+# define function for song recommendations
+
+def recommend_songs_for_group(
+    knn_model,
+    group_vector,
+    track_ids,
+    rated_track_ids,
+    n_songs
+):
+    # kNN get Neighbours
+    distances, indices = knn_model.kneighbors(
+        group_vector.reshape(1, -1),
+        n_neighbors=n_songs + len(rated_track_ids)
+    )
+
+    neighbor_idxs = indices[0]
+
+    # Seeds (bereits bewertete Songs) herausfiltern
+    rated_set = set(rated_track_ids)
+    recommended_idxs = []
+    for idx in neighbor_idxs:
+        tid = track_ids[idx]
+        if tid not in rated_set:
+            recommended_idxs.append(idx)
+        if len(recommended_idxs) >= n_songs:
+            break
+
+    # Track-IDs der empfohlenen Songs
+    recommended_track_ids = track_ids[recommended_idxs]
+    return recommended_track_ids
+
+# final function call
+
+n_desired_songs = 20   # direkt an Streamlit Button anbinden -> @Bruno, kannst auch früher schon variable n_desired_songs definieren
+
+recommended_ids = recommend_songs_for_group(
+    knn_model=knn_model,
+    group_vector=group_vector,          # aus Schritt 4
+    track_ids=track_ids,               # aus Schritt 0
+    rated_track_ids=rated_track_ids,   # aus songs_df
+    n_songs=n_desired_songs
+)
 
 
 # -------------------------
