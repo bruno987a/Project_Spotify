@@ -6,6 +6,20 @@ from pathlib import Path
 from sklearn.neighbors import NearestNeighbors #Machine Learning algorithm @Lorenz
 
 
+""" Define path for local and project data for test version.
+    Can later be adapted for final version."""
+
+LOCAL_DATA_DIR = Path("/Users/alexbuser/Library/Mobile Documents/com~apple~CloudDocs/02_Business/04_IT/01_Cobrazähmerei/10_Fundamentals of CS HSG/Group project/data")
+
+tracks = pd.read_csv(LOCAL_DATA_DIR / "tracks.csv", index_col=0, low_memory=False)
+features = pd.read_csv(LOCAL_DATA_DIR / "features.csv", index_col=0, low_memory=False)
+
+BASE_DIR = Path(__path__).resolve().parent
+PROJECT_DATA_DIR = DATA_DIR / "data"
+
+genres = pd.read_csv(PROJECT_DATA_DIR / "genre_with_main_identity.csv")
+
+
 # -------------------------
 # 
 # -------------------------
