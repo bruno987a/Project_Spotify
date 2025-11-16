@@ -153,7 +153,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
 
 # Vector definition with computed features
 
-features = pd.read_csv("features.csv", index_col=0)  # track_id as index
+features = pd.read_csv("data/reduced_features.csv", index_col=0)  # track_id as index
 
 feature_cols = [
     "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
