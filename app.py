@@ -5,7 +5,7 @@ import random
 from pathlib import Path
 from sklearn.neighbors import NearestNeighbors #Machine Learning algorithm @Lorenz
 
-# Vecor definition with computed features
+# Vector definition with computed features
 
 """ Define path for local and project data for test version.
     Can later be adapted for final version."""
@@ -192,4 +192,3 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
 
     st.button("Save Playlist to Spotify (coming soon)")
 
-# Vector application test
