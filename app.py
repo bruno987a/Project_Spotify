@@ -189,7 +189,7 @@ knn_model = NearestNeighbors(
 knn_model.fit(X)
 """
 
-# Rated songs in same order as ratings -> CHECKEN, OB SIE track_ids enthalten!
+# Rated songs in same order as ratings -> CHECKEN, ob sie track_ids enthalten!
 # Annahme: Songs zur Bewertung in chronologischer Abfolge unter songs_df abgespeichert.
 rated_track_ids = songs_df["track_id"].tolist()
 
@@ -205,10 +205,38 @@ user_ratings = {
     "user1": ratings_user1,
     "user2": ratings_user2,
     "user3": ratings_user3,
-    "user4": ratings_user4
+    "user4": ratings_user4,
     "user5": ratings_user5
     # add more users if necessary
-}
+    }
+
+# define function to create seed vector per user
+
+def build_user_profile(ratings_list, rated_track_ids, features_df):
+    """
+    ratings_list: Liste von Ratings (1–5), gleiche Reihenfolge wie rated_track_ids
+    rated_track_ids: Liste der track_ids aus songs_df
+    features_df: features_15_scaled (index = track_id)
+    """
+    ratings = np.asarray(ratings_list, dtype=float)
+
+    # Use only songs with Rating > 0
+    mask = ratings > 0
+    if not mask.any():
+        raise ValueError("User did not rate any songs.")
+
+    used_ratings = ratings[mask]
+    used_ids = [tid for tid, m in zip(rated_track_ids, mask) if m]
+
+    # get vectors of rated songs
+    vecs = features_df.loc[used_ids].values          # Shape: (n_rated, 15)
+
+    # Weighted Average (Ratings = weights)
+    weights = used_ratings[:, None]                  # Shape: (n_rated, 1)
+    weighted_sum = (vecs * weights).sum(axis=0)
+    profile_vector = weighted_sum / weights.sum()
+
+    return profile_vector    # Shape: (15,)
 
 
 
