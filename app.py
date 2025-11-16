@@ -261,48 +261,23 @@ if feature_name_to_boost in feature_cols:
 
 # can add multiple of these blocks for more leeway
 
-# define function for song recommendations
+# --- kNN-Setup  ---
 
-def recommend_songs_for_group(
-    knn_model,
-    group_vector,
-    track_ids,
-    rated_track_ids,
-    n_songs
-):
-    # kNN get Neighbours
-    distances, indices = knn_model.kneighbors(
-        group_vector.reshape(1, -1),
-        n_neighbors=n_songs + len(rated_track_ids)
-    )
+X = features_15_scaled.values                     # Matrix (n_tracks, 15)
+track_ids = features_15_scaled.index.to_numpy()   # Track-IDs in the same order
 
-    neighbor_idxs = indices[0]
+knn_model = NearestNeighbors(metric="cosine", n_neighbors=200)
+knn_model.fit(X)
 
-    # Seeds (bereits bewertete Songs) herausfiltern
-    rated_set = set(rated_track_ids)
-    recommended_idxs = []
-    for idx in neighbor_idxs:
-        tid = track_ids[idx]
-        if tid not in rated_set:
-            recommended_idxs.append(idx)
-        if len(recommended_idxs) >= n_songs:
-            break
+# --- simple function setup ---
 
-    # Track-IDs der empfohlenen Songs
-    recommended_track_ids = track_ids[recommended_idxs]
-    return recommended_track_ids
+def recommend(group_vec, n_songs):
+    _, idx = knn_model.kneighbors(group_vec.reshape(1, -1), n_neighbors=n_songs)
+    return track_ids[idx[0]]
 
 # final function call
-
-n_desired_songs = 20   # direkt an Streamlit Button anbinden -> @Bruno, kannst auch früher schon variable n_desired_songs definieren
-
-recommended_ids = recommend_songs_for_group(
-    knn_model=knn_model,
-    group_vector=group_vector,          # aus Schritt 4
-    track_ids=track_ids,               # aus Schritt 0
-    rated_track_ids=rated_track_ids,   # aus songs_df
-    n_songs=n_desired_songs
-)
+n_desired_songs = 20 # Anzahl Songs kannst du später an Streamlit binden @Bruno variable kannst du an Button in Auswahl binden
+recommended_ids = recommend(group_vector, n_desired_songs)
 
 
 # -------------------------
