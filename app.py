@@ -153,6 +153,11 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
         st.session_state.step = 4
         st.success("Evaluation submitted! Proceed to Final Playlist.")
 
+
+# ------------------------------
+# START MACHINE LEARNING PART
+# ------------------------------
+
 # Vector definition with computed features
 
 features = pd.read_csv("features.csv", index_col=0)  # track_id as index
@@ -172,7 +177,6 @@ scaler = StandardScaler()
 X_15 = scaler.fit_transform(features_15)
 
 features_15_scaled = pd.DataFrame(X_15, index=features.index, columns=feature_cols)
-
 
 # Nearest Neighbours setup and function call
 
@@ -278,7 +282,8 @@ def recommend(group_vec, n_songs):
 # final function call
 recommended_ids = recommend(group_vector, n_desired_songs)
 
-
+# -------------------------
+# END MACHINE LEARNING
 # -------------------------
 # STEP 4 — Final Playlist
 # -------------------------
