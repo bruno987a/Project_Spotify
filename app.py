@@ -275,8 +275,8 @@ knn_model.fit(X)
 
 # --- simple function setup ---
 
-def recommend(group_vec, n_songs):
-    _, idx = knn_model.kneighbors(group_vec.reshape(1, -1), n_neighbors=n_songs)
+def recommend(group_vec, n_desired_songs):
+    _, idx = knn_model.kneighbors(group_vec.reshape(1, -1), n_neighbors=n_desired_songs)
     return track_ids[idx[0]]
 
 # final function call
