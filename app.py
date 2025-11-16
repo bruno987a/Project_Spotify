@@ -174,6 +174,44 @@ X_15 = scaler.fit_transform(features_15)
 features_15_scaled = pd.DataFrame(X_15, index=features.index, columns=feature_cols)
 
 
+# Nearest Neighbours setup and function call
+
+"""
+# Training of the model, can be activated if necessary.
+# features_15_scaled: DataFrame (index = track_id, columns = feature_cols)
+X = features_15_scaled.values                     # NumPy-Matrix (n_tracks, 15)
+track_ids = features_15_scaled.index.to_numpy()   # Track-IDs passend zu X
+
+knn_model = NearestNeighbors(
+    n_neighbors=200,      # erstmal „viele“, filtern später runter
+    metric="cosine"
+)
+knn_model.fit(X)
+"""
+
+# Rated songs in same order as ratings -> CHECKEN, OB SIE track_ids enthalten!
+# Annahme: Songs zur Bewertung in chronologischer Abfolge unter songs_df abgespeichert.
+rated_track_ids = songs_df["track_id"].tolist()
+
+# Ratings from streamlit per user
+ratings_user1 = rating.user1   # numbers from 1-5
+ratings_user2 = rating.user2   # gleiche Länge wie rated_track_ids??
+ratings_user3 = rating.user3   
+ratings_user4 = rating.user4
+ratings_user5 = rating.user5
+
+# dictionary of "user" - rating pairs
+user_ratings = {
+    "user1": ratings_user1,
+    "user2": ratings_user2,
+    "user3": ratings_user3,
+    "user4": ratings_user4
+    "user5": ratings_user5
+    # add more users if necessary
+}
+
+
+
 
 # -------------------------
 # STEP 4 — Final Playlist
