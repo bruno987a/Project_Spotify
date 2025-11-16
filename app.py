@@ -190,3 +190,5 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
         st.experimental_rerun()
 
     st.button("Save Playlist to Spotify (coming soon)")
+
+# Vector application test
