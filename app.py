@@ -24,13 +24,6 @@ genres = pd.read_csv(PROJECT_DATA_DIR / "genre_with_main_identity.csv",)
 # -------------------------
 # 
 # -------------------------
-songs_data = [
-    {"Title": "Spotify", "Artist": "Taylor Swift", "Genre": "Pop", "Duration": "3:55"},
-    {"Title": "Do I Wanna Know?", "Artist": "Arctic Monkeys", "Genre": "Indie Rock", "Duration": "4:33"},
-    {"Title": "Bad Guy", "Artist": "Billie Eilish", "Genre": "Pop", "Duration": "3:14"},
-    {"Title": "Blinding Lights", "Artist": "The Weeknd", "Genre": "Synthpop", "Duration": "3:20"},
-    {"Title": "Levitating", "Artist": "Dua Lipa", "Genre": "Pop", "Duration": "3:23"},
-]
 
 candidate_songs = []
 
