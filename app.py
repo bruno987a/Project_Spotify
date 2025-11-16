@@ -4,7 +4,7 @@ import numpy as np
 import random
 from pathlib import Path
 from sklearn.neighbors import NearestNeighbors #Machine Learning algorithm @Lorenz
-
+from sklearn.preprocessing import StandardScaler
 
 
 """ Define path for local and project data for test version.
