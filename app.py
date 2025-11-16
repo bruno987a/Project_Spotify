@@ -11,7 +11,7 @@ from sklearn.preprocessing import StandardScaler
     Can later be adapted for final version."""
 
 
-BASE_DIR = Path(__path__).resolve().parent #path to parent file or our project
+BASE_DIR = Path(__file__).resolve().parent #path to parent file or our project
 PROJECT_DATA_DIR = BASE_DIR / "data" #path to data samples in our project
 
 tracks = pd.read_csv(PROJECT_DATA_DIR / "tracks_small.csv", index_col=0, low_memory=False)
