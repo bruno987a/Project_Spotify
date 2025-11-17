@@ -156,26 +156,25 @@ features = pd.read_csv("data/reduced_features.csv", index_col=0)  # track_id as 
 feature_cols = [
     "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
     "mfcc_06_mean", "mfcc_07_mean", "mfcc_08_mean", "mfcc_09_mean", "mfcc_10_mean",
-    "rms_mean",
-    "tempo",
-    "spectral_centroid_mean",
-    "spectral_bandwidth_mean",
+    "rmse_01_mean",
+    "spectral_centroid_01_mean",
+    "spectral_bandwidth_01_mean",
     "chroma_var"
 ]
-features_15 = features[feature_cols].copy()
+features_14 = features[feature_cols].copy()
 
 scaler = StandardScaler()
-X_15 = scaler.fit_transform(features_15)
+X_14 = scaler.fit_transform(features_14)
 
-features_15_scaled = pd.DataFrame(X_15, index=features.index, columns=feature_cols)
+features_14_scaled = pd.DataFrame(X_14, index=features.index, columns=feature_cols)
 
 # Nearest Neighbours setup and function call
 
 """
 # Training of the model, can be activated if necessary.
-# features_15_scaled: DataFrame (index = track_id, columns = feature_cols)
-X = features_15_scaled.values                     # NumPy-Matrix (n_tracks, 15)
-track_ids = features_15_scaled.index.to_numpy()   # Track-IDs passend zu X
+# features_14_scaled: DataFrame (index = track_id, columns = feature_cols)
+X = features_14_scaled.values                     # NumPy-Matrix (n_tracks, 14)
+track_ids = features_14_scaled.index.to_numpy()   # Track-IDs passend zu X
 
 knn_model = NearestNeighbors(
     n_neighbors=200,      # erstmal „viele“, filtern später runter
@@ -207,42 +206,42 @@ user_ratings = {
 
 # define function to create seed vector per user
 
-def build_user_profile(ratings_list, rated_track_ids, features_15_scaled):
+def build_user_profile(ratings_list, rated_track_ids, features_14_scaled):
     """
     ratings_list: Liste von Ratings (1–5), gleiche Reihenfolge wie rated_track_ids
     rated_track_ids: Liste der track_ids aus songs_df
-    features_df: features_15_scaled (index = track_id), muss ev. noch assigned werden
+    features_df: features_14_scaled (index = track_id), muss ev. noch assigned werden
     """
 
     # Convert ratings to Numpy arrays
     ratings = np.asarray(ratings_list, dtype=float)
 
     # Set vectors of rated songs
-    vecs = features_15_scaled.loc[rated_track_ids].values          # Shape: (n_rated, 15)
+    vecs = features_14_scaled.loc[rated_track_ids].values          # Shape: (n_rated, 14)
 
     # Weighted Average (Ratings = weights)
     profile_vector = np.average(vecs, axis=0, weights=ratings)
 
-    return profile_vector    # Shape: (15,)
+    return profile_vector    # Shape: (14,)
 
 # Collect all seed vector of users into a list
 
 user_profiles = []
 
 for ratings_list in user_ratings.values():
-    profile = build_user_profile(ratings_list, rated_track_ids, features_15_scaled)
+    profile = build_user_profile(ratings_list, rated_track_ids, features_14_scaled)
     user_profiles.append(profile)
 
 # Group vector representing music taste = average of user profiles
 
-group_profile = np.mean(user_profiles, axis=0)   # Shape: (15,)
+group_profile = np.mean(user_profiles, axis=0)   # Shape: (14,)
 
 # Adjustment instruments for emphazising certain features
 
 group_vector = group_profile.copy()
 
 # give more weight to one feature  (e.g. factor 1.5)
-feature_name_to_boost = "tempo"   # <- change as desired
+feature_name_to_boost = "rmse_01_mean"   # <- change as desired
 if feature_name_to_boost in feature_cols:
     idx = feature_cols.index(feature_name_to_boost)
     group_vector[idx] *= 1.5
@@ -251,8 +250,8 @@ if feature_name_to_boost in feature_cols:
 
 # --- kNN-Setup  ---
 
-X = features_15_scaled.values                     # Matrix (n_tracks, 15)
-track_ids = features_15_scaled.index.to_numpy()   # Track-IDs in the same order
+X = features_14_scaled.values                     # Matrix (n_tracks, 14)
+track_ids = features_14_scaled.index.to_numpy()   # Track-IDs in the same order
 
 knn_model = NearestNeighbors(metric="cosine", n_neighbors=200)
 knn_model.fit(X)
