@@ -218,7 +218,7 @@ def build_user_profile(ratings_list, rated_track_ids, features_15_scaled):
     ratings = np.asarray(ratings_list, dtype=float)
 
     # Set vectors of rated songs
-    vecs = features_15_scaled.loc[used_ids].values          # Shape: (n_rated, 15)
+    vecs = features_15_scaled.loc[rated_track_ids].values          # Shape: (n_rated, 15)
 
     # Weighted Average (Ratings = weights)
     profile_vector = np.average(vecs, axis=0, weights=ratings)
