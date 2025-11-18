@@ -136,8 +136,15 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
         
     #rating process @Loris
         
-        rating = cols[4].radio(" ", ["👍", "👎"], horizontal=True, key=f"song_{idx}") 
+        rating = cols[4].radio(
+            "Rating ", 
+            options=[1,2,3,4,5],
+            format_func=lambda x: "⭐" * x,
+            horizontal=True, 
+            key=f"song_{idx}") 
         st.session_state.ratings[row["track_id"]] = rating
+
+    
 
     if st.button("Generate Final Playlist"):
         st.session_state.evaluation_done = True
@@ -188,7 +195,10 @@ knn_model.fit(X)
 rated_track_ids = songs_df["track_id"].tolist()
 
 # Ratings from streamlit per user
-ratings_user1 = list(st.session_state.ratings.values())   # numbers from 1-5, as a list for each song 
+ratings_user1 = [
+    st.session_state.ratings[track_id]
+    for track_id in rated_track_ids
+]# numbers from 1-5, as a list for each song 
 #ratings_user2 = rating.user2   # activate them
 #ratings_user3 = rating.user3   # @Loris vielleicht noch Name anpassen damits deine Zahlen übernimmt
 #ratings_user4 = rating.user4
