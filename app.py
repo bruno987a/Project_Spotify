@@ -266,7 +266,7 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
     st.header("Step 4 – Your final recommended playlist")
     st.write("Generated based on your preferences and evaluations:")
 
-    df_final = pd.DataFrame(recommended_ids)
+    df_final = s_t[s_t["track_id"]isin(recommended_ids)][["title", "artist"]]
     st.dataframe(df_final, use_container_width=True)
 
     st.markdown("**Summary:**")
