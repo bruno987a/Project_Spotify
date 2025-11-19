@@ -2,22 +2,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import random
-from pathlib import Path
 from sklearn.neighbors import NearestNeighbors #Machine Learning algorithm @Lorenz
 from sklearn.preprocessing import StandardScaler
-
-
-""" Define path for local and project data for test version.
-    Can later be adapted for final version."""
-
-
-BASE_DIR = Path(__file__).resolve().parent #path to parent file or our project
-PROJECT_DATA_DIR = BASE_DIR / "data" #path to data samples in our project
-
-tracks = pd.read_csv(PROJECT_DATA_DIR / "tracks_small.csv", index_col=0, low_memory=False)
-genres = pd.read_csv(PROJECT_DATA_DIR / "genre_with_main_identity.csv",)
-
-
 
 # -------------------------
 # 
