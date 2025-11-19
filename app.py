@@ -174,7 +174,7 @@ if st.button("Generate Final Playlist"):
     
     # Rated songs in form of a list in the same order as ratings, ist falsch geratete Liste ist ein dict!!! zugeordnet zur track_id!!!
     # Annahme: Songs zur Bewertung in chronologischer Abfolge unter songs_df abgespeichert. sollte stimmen
-    rated_track_ids = st.session_state.ratings["track_id"].tolist()
+    rated_track_ids = list(st.session_state.ratings.keys())
     
     # Ratings from streamlit per user
     ratings_user1 = [
