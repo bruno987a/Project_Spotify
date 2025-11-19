@@ -35,7 +35,7 @@ st.markdown("Create personalized playlists based on your musical preferences and
 
 # Initialize session state for progress tracking
 if "step" not in st.session_state:
-    st.session_state.step = 1
+    st.session_state.step = 2
 if "ratings" not in st.session_state:
     st.session_state.ratings = {}
 if "criteria_confirmed" not in st.session_state:
