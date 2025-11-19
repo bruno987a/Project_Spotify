@@ -82,8 +82,7 @@ if st.session_state.step >= 2:
 if st.session_state.step >= 3 and st.session_state.criteria_confirmed:  
     st.header("Step 3 – Quick song evaluation")
     st.write("Please rate the following songs:")
-    
-    import pandas as pd
+
     from ast import literal_eval
     from random import choice
     
@@ -273,7 +272,6 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
 
     st.markdown("**Summary:**")
     st.write(f"- Total songs: {len(df_final)}")
-    st.write(f"- Average recommendation score: {df_final['rating'].mean():.1f}%")
 
     if st.button("Start Over"):
         st.session_state.step = 2
