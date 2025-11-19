@@ -38,8 +38,6 @@ if "step" not in st.session_state:
     st.session_state.step = 1
 if "ratings" not in st.session_state:
     st.session_state.ratings = {}
-if "playlist_imported" not in st.session_state:
-    st.session_state.playlist_imported = False
 if "criteria_confirmed" not in st.session_state:
     st.session_state.criteria_confirmed = False
 if "evaluation_done" not in st.session_state:
@@ -48,28 +46,12 @@ if "evaluation_done" not in st.session_state:
 # -------------------------
 # STEP 1 — Import Playlist
 # -------------------------
-if st.session_state.step >= 1:
-    st.header("Step 1 – Import your Spotify playlist")
-    playlist_id = st.text_input("Enter your Spotify Playlist ID or URL:", placeholder="e.g., https://open.spotify.com/playlist/...")
-
-    if st.button("Import Playlist"):
-        st.session_state.playlist_imported = True
-        st.session_state.step = 2
-        st.success("Playlist imported successfully (mock data shown below).")
-        df = pd.DataFrame(songs_data)
-        st.subheader("Your Playlist Preview")
-        st.dataframe(df, use_container_width=True)
-
-        st.markdown("**Summary:**")
-        st.write("- Total songs: ", len(df))
-        st.write("- Top genres: Pop, Indie Rock, Synthpop")
-        st.write("- Top artists: Taylor Swift, Arctic Monkeys, Billie Eilish")
-
+#deleted
 
 # -------------------------
 # STEP 2 — Generation Criteria
 # -------------------------
-if st.session_state.step >= 2 and st.session_state.playlist_imported:
+if st.session_state.step >= 2:
     st.header("Step 2 – Playlist generation criteria")
     similarity = st.selectbox("Select similarity level:",
     ["None", "Genre", "Artist", "Mixed"],
@@ -300,9 +282,8 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
     st.write(f"- Average recommendation score: {df_final['Score'].mean():.1f}%")
 
     if st.button("Start Over"):
-        st.session_state.step = 1
+        st.session_state.step = 2
         st.session_state.ratings = {}
-        st.session_state.playlist_imported = False
         st.session_state.criteria_confirmed = False
         st.session_state.evaluation_done = False
         st.experimental_rerun()
