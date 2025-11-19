@@ -255,7 +255,7 @@ if st.button("Generate Final Playlist"):
         return track_ids[idx[0]]
     
     # final function call
-    recommended_ids = recommend(group_vector, n_desired_songs)
+    recommended_ids = recommend(group_vector, n_desired_songs).tolist()
 
 # -------------------------
 # END MACHINE LEARNING
@@ -264,17 +264,9 @@ if st.button("Generate Final Playlist"):
 # -------------------------
 if st.session_state.step >= 4 and st.session_state.evaluation_done:
     st.header("Step 4 – Your final recommended playlist")
-    st.write("Generated based on your preferences and evaluations (mock results):")
+    st.write("Generated based on your preferences and evaluations:")
 
-    final_playlist = [
-        {"Title": "Electric Feel", "Artist": "MGMT", "Score": random.randint(80, 99)},
-        {"Title": "Peach", "Artist": "Kevin Abstract", "Score": random.randint(80, 99)},
-        {"Title": "Golden Hour", "Artist": "JVKE", "Score": random.randint(80, 99)},
-        {"Title": "Midnight City", "Artist": "M83", "Score": random.randint(80, 99)},
-        {"Title": "Heat Waves", "Artist": "Glass Animals", "Score": random.randint(80, 99)},
-    ]
-
-    df_final = pd.DataFrame(final_playlist)
+    df_final = pd.DataFrame(recommended_ids)
     st.dataframe(df_final, use_container_width=True)
 
     st.markdown("**Summary:**")
