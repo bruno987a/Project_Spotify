@@ -5,9 +5,7 @@ import random
 from sklearn.neighbors import NearestNeighbors #Machine Learning algorithm @Lorenz
 from sklearn.preprocessing import StandardScaler
 
-# -------------------------
-# 
-# -------------------------
+
 
 candidate_songs = []
 
