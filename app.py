@@ -38,7 +38,7 @@ if "evaluation_done" not in st.session_state:
 # STEP 2 — Generation Criteria
 # -------------------------
 if st.session_state.step >= 2:
-    st.header("Step 2 – Playlist generation criteria")
+    st.header("Step 1 – Playlist generation criteria")
     similarity = st.selectbox("Select similarity level:",
     ["None", "Genre", "Artist", "Mixed"],
     index=0,  # default selection is "None"
