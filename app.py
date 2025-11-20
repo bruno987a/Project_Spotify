@@ -46,9 +46,9 @@ if st.session_state.step >= 2:
     key="similarity")
 
 # Song selecetion for rating 
-    genre_map = {"Rock/Metal/Punk": 1, "Pop/Synth": 2, "Electronic/IDM": 3, "Hip-Hop/RnB/Funk": 4,    
+    genre_map = {"Rock/Metal/Punk": 1, "Pop/Synth": 2, "Electronic/IDM": 3, "Hip-Hop/RnB": 4,    
     "Jazz/Blues": 5, "Classical": 6, "Folk/Country/Americana": 7, "World/Reggae/Latin": 8,
-    "Experimental/Sound Art": 9, "Spoken/Soundtrack/Misc": 10}   
+    "Experimental/Sound Art": 9, "Spoken/Soundtrack/Misc": 10, "Funk": 11}   
 
     key_genre = st.selectbox("Select Genre:", list(genre_map.keys()))                                  #the user choses his genre he wishes, recommendations for 
     chosen_genre = genre_map[key_genre]                                                                #the selected genre gets maped to the associated number 
