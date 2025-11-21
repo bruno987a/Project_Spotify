@@ -64,7 +64,7 @@ if st.session_state.step >= 2:
 # STEP 3 — Quick Evaluation
 # -------------------------
 if st.session_state.step >= 3 and st.session_state.criteria_confirmed:  
-    st.header("Step 3 – Quick song evaluation")
+    st.header("Step 2 – Quick song evaluation")
     st.write("Please rate the following songs:")
 
     from ast import literal_eval
@@ -248,7 +248,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
 # STEP 4 — Final Playlist
 # -------------------------
 if st.session_state.step >= 4 and st.session_state.evaluation_done:
-    st.header("Step 4 – Your final recommended playlist")
+    st.header("Step 3 – Your final recommended playlist")
     st.write("Generated based on your preferences and evaluations:")
 
     df_final = s_t[s_t["track_id"].isin(recommended_ids)][["title", "artist"]]
