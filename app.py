@@ -144,18 +144,18 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
         
         # Nearest Neighbours setup and function call
         
-        """
+        
         # Training of the model, can be activated if necessary.
         # features_14_scaled: DataFrame (index = track_id, columns = feature_cols)
-        X = features_14_scaled.values                     # NumPy-Matrix (n_tracks, 14)
-        track_ids = features_14_scaled.index.to_numpy()   # Track-IDs passend zu X
+        # X = features_14_scaled.values                     # NumPy-Matrix (n_tracks, 14)
+        # track_ids = features_14_scaled.index.to_numpy()   # Track-IDs passend zu X
         
-        knn_model = NearestNeighbors(
-            n_neighbors=200,      # erstmal „viele“, filtern später runter
-            metric="cosine"
-        )
-        knn_model.fit(X)
-        """
+        # knn_model = NearestNeighbors(
+        #     n_neighbors=200,      # erstmal „viele“, filtern später runter
+        #     metric="cosine"
+        # )
+        # knn_model.fit(X)
+        
         
         # Rated songs in form of a list in the same order as ratings, ist falsch geratete Liste ist ein dict!!! zugeordnet zur track_id!!!
         # Annahme: Songs zur Bewertung in chronologischer Abfolge unter songs_df abgespeichert. sollte stimmen
