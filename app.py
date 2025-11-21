@@ -94,22 +94,25 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
         st.session_state.candidate_songs = rand_track_genre(chosen_genre, 5) # hier noch auswahl der anzahl songs ermöglichen evtl.
 
     songs_df = st.session_state.candidate_songs
-    
+
     for idx, (track_id, row) in enumerate(songs_df.iterrows()):
-        cols = st.columns([3, 3, 2, 2, 2])
-        
-        cols[0].write(row["title"])
-        cols[1].write(row["artist"])
-        
-    #rating process @Loris
-        
-        rating = cols[4].radio(
-            "Rating ", 
-            options=[1,2,3,4,5],
-            format_func=lambda x: "⭐" * x,
-            horizontal=True, 
-            key=f"song_{idx}") 
-        st.session_state.ratings[row["track_id"]] = rating
+        col1, col2, col3 = st.columns([4, 4, 4])
+
+        with col1:
+            st.write(row["title"])
+        with col2:
+            st.write(row["artist"])
+        with col3:
+            rating = st.slider(
+                label="",
+                min_value=1,
+                max_value=5,
+                value=3,
+                key=f"rating_{idx}",
+                label_visibility="collapsed",
+            )
+            st.session_state.ratings[row["track_id"]] = rating
+
 
     
 if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
