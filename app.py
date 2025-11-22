@@ -95,6 +95,26 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
 
     songs_df = st.session_state.candidate_songs
 
+    st.markdown("""
+    <style>
+    /* Change slider track color */
+    [data-baseweb="slider"] > div > div {
+        background-color: #b5b5b5 !important;   /* slider track (gray) */
+    }
+
+    /* Change active filled part */
+    [data-baseweb="slider"] [role="slider"]::before {
+        background-color: #8c8c8c !important;   /* filled part of slider */
+    }
+
+    /* Change slider handle color */
+    [data-baseweb="slider"] [role="slider"] {
+       background-color: #6e6e6e !important;   /* handle */
+        border: 1px solid #444 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     for idx, (track_id, row) in enumerate(songs_df.iterrows()):
         c1, c2, c3 = st.columns([4, 4, 3])
 
