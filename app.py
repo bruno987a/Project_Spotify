@@ -95,24 +95,72 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
 
     songs_df = st.session_state.candidate_songs
 
+    # --- Table styling ---
+    st.markdown("""
+<style>
+/* Table border */
+.song-table {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 8px;
+}
+
+/* Header row */
+.song-header {
+    font-weight: bold;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+}
+
+/* Reduce slider height */
+div[data-baseweb="slider"] {
+    height: 18px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Shrink slider handle */
+div[data-baseweb="slider"] div {
+    height: 8px !important;
+}
+
+/* Reduce spacing above slider */
+.stSlider {
+    margin-top: -20px;
+    margin-bottom: -10px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+    st.markdown('<div class="song-table">', unsafe_allow_html=True)
+
+# --- Header row ---
+    h1, h2, h3 = st.columns([4, 4, 3])
+    h1.markdown('<div class="song-header">Title</div>', unsafe_allow_html=True)
+    h2.markdown('<div class="song-header">Artist</div>', unsafe_allow_html=True)
+    h3.markdown('<div class="song-header">Rating</div>', unsafe_allow_html=True)
+
+# --- Song rows ---
     for idx, (track_id, row) in enumerate(songs_df.iterrows()):
-        col1, col2, col3 = st.columns([4, 4, 4])
+        c1, c2, c3 = st.columns([4, 4, 3])
 
-        col1.write(row["title"])
-        col2.write(row["artist"])
+        c1.write(row["title"])
+        c2.write(row["artist"])
 
-        rating = col3.slider(
+        rating = c3.slider(
             label="", 
             min_value=1,
             max_value=5,
             value=3,
             key=f"rating_{idx}",
-            label_visibility="collapsed"
+            label_visibility="collapsed",
+            step=1,
         )
 
         st.session_state.ratings[row["track_id"]] = rating
 
-
+    st.markdown('</div>', unsafe_allow_html=True)
     
 if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
     if st.button("Generate Final Playlist"):
