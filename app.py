@@ -95,51 +95,51 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
 
     songs_df = st.session_state.candidate_songs
 
-st.markdown("""
-    <style>
-    /* Shrink slider height */
-    div[data-baseweb="slider"] {
-        height: 20px !important;
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
-    }
-    /* Shrink handle */
-    div[data-baseweb="slider"] div {
-        height: 8px !important;
-    }
-    /* Reduce top margin above slider */
-    .stSlider {
-        margin-top: -15px;
-        margin-bottom: -5px;
-    }
-    </style>
-""", unsafe_allow_html=True)
+    st.markdown("""
+        <style>
+        /* Shrink slider height */
+        div[data-baseweb="slider"] {
+            height: 20px !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+        /* Shrink handle */
+        div[data-baseweb="slider"] div {
+            height: 8px !important;
+        }
+        /* Reduce top margin above slider */
+        .stSlider {
+            margin-top: -15px;
+            margin-bottom: -5px;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
-st.markdown("### Songs to Rate")
+    st.markdown("### Songs to Rate")
 
 # Header row (table-like)
-header_cols = st.columns([4, 4, 4])
-header_cols[0].markdown("**Title**")
-header_cols[1].markdown("**Artist**")
-header_cols[2].markdown("**Rating**")
+    header_cols = st.columns([4, 4, 4])
+    header_cols[0].markdown("**Title**")
+    header_cols[1].markdown("**Artist**")
+    header_cols[2].markdown("**Rating**")
 
 # Rows
-for idx, (track_id, row) in enumerate(songs_df.iterrows()):
-    col1, col2, col3 = st.columns([4, 4, 4])
+    for idx, (track_id, row) in enumerate(songs_df.iterrows()):
+        col1, col2, col3 = st.columns([4, 4, 4])
 
-    col1.write(row["title"])
-    col2.write(row["artist"])
+        col1.write(row["title"])
+        col2.write(row["artist"])
 
-    rating = col3.slider(
-        label="", 
-        min_value=1,
-        max_value=5,
-        value=3,
-        key=f"rating_{idx}",
-        label_visibility="collapsed"
-    )
+        rating = col3.slider(
+            label="", 
+            min_value=1,
+            max_value=5,
+            value=3,
+            key=f"rating_{idx}",
+            label_visibility="collapsed"
+        )
 
-    st.session_state.ratings[row["track_id"]] = rating
+        st.session_state.ratings[row["track_id"]] = rating
 
 
     
