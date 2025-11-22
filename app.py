@@ -116,16 +116,18 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
         c1.write(row["title"])
         c2.write(row["artist"])
 
-        rating = c3.slider(
-            label="", 
-            min_value=1,
-            max_value=5,
-            value=3,
-            key=f"rating_{idx}",
-            label_visibility="collapsed",
-            step=1,
-        )
-
+        with c3:
+            st.markdown('<div class="rating-slider-container">', unsafe_allow_html=True)
+            rating = st.slider(
+                label="", 
+                min_value=1,
+                max_value=5,
+                value=3,
+                key=f"rating_{idx}",
+                label_visibility="collapsed",
+                step=1,
+            )
+            st.markdown('</div>', unsafe_allow_html=True)
         st.session_state.ratings[row["track_id"]] = rating
     
 if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
