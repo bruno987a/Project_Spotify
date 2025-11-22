@@ -97,20 +97,15 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
 
     st.markdown("""
     <style>
-    /* Change slider track color */
-    [data-baseweb="slider"] > div > div {
-        background-color: #b5b5b5 !important;   /* slider track (gray) */
+    .rating-slider-container [data-baseweb="slider"] > div > div {
+        background-color: #b5b5b5 !important;   /* track */
     }
-
-    /* Change active filled part */
-    [data-baseweb="slider"] [role="slider"]::before {
-        background-color: #8c8c8c !important;   /* filled part of slider */
+    .rating-slider-container [data-baseweb="slider"] [role="slider"]::before {
+        background-color: #8c8c8c !important;   /* filled part */
     }
-
-    /* Change slider handle color */
-    [data-baseweb="slider"] [role="slider"] {
-       background-color: #6e6e6e !important;   /* handle */
-        border: 1px solid #444 !important;
+    .rating-slider-container [data-baseweb="slider"] [role="slider"] {
+        background-color: #6e6e6e !important;   /* handle */
+        border: 1px solid #444 !important;        
     }
     </style>
     """, unsafe_allow_html=True)
