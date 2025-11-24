@@ -20,12 +20,20 @@ st.markdown("Create personalized playlists based on your musical preferences and
 # Initialize session state for progress tracking
 if "step" not in st.session_state:
     st.session_state.step = 2
+
 if "ratings" not in st.session_state:
     st.session_state.ratings = {}
+
+if "current_user" not in st.session_state:
+    st.session_state.current_user = "User 1"
+
 if "criteria_confirmed" not in st.session_state:
     st.session_state.criteria_confirmed = False
+    
 if "evaluation_done" not in st.session_state:
     st.session_state.evaluation_done = False
+
+
 
 # -------------------------
 # STEP 1 — Import Playlist
@@ -67,6 +75,22 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
     st.header("Step 2 – Quick song evaluation")
     st.write("Please rate the following songs:")
 
+    #Who is rating
+    current_user = st.text_input(
+        "Who is rating?", value=st.session_state.current_user,
+        help="Enter your name here")
+    
+    #Fallback, if someone leaves it empty
+    if not current_user.strip():
+        current_user = "User 1"
+
+    st.session_state.current_user = current_user
+
+    #rating-dict
+    if current_user not in st.session_state.ratings:
+        st.session_state.ratings[current_user]
+        
+   
     from ast import literal_eval
     from random import choice
     
@@ -110,6 +134,9 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
             label_visibility="collapsed",
             step=1,
         )
+
+        #save the rating for this user
+        user_ratings[row["track_id"]] = rating
 
         st.session_state.ratings[row["track_id"]] = rating
     
@@ -205,10 +232,30 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
         # Collect all seed vector of users into a list
         
         user_profiles = []
-        
-        for ratings_list in user_ratings.values():
+
+        #username to track id: rating, continue if not rated 
+        for username, rating_dict in st.session_state.ratings.items():
+            if not rating_dict:
+                continue 
+
+        #Track-IDs and Ratings of this user
+            rated_track_ids = list(rating_dict.keys())
+            ratings_list = [rating_dict[tid] for tid in rated_track_ids]
+
+        #only use tracks, for wich we have features
+            rated_track_ids = [tid for tid in rated_track_ids if tid in features_14_scaled.index]
+            ratings_list = [rating_dict[tid] for tid in rated_track_ids]
+
+            if len(rated_track_ids) == 0:
+                continue
+
             profile = build_user_profile(ratings_list, rated_track_ids, features_14_scaled)
             user_profiles.append(profile)
+
+        if len(user_profiles) == 0:
+            st.error("There are no ratings - no recommendation possible.")
+            st.stop()
+        
         
         # Group vector representing music taste = average of user profiles
         
