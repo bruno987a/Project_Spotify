@@ -89,7 +89,8 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
     #rating-dict
     if current_user not in st.session_state.ratings:
         st.session_state.ratings[current_user]
-        
+    user_ratings = st.session_state.ratings[current_user]
+    
    
     from ast import literal_eval
     from random import choice
