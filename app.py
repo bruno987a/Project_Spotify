@@ -88,7 +88,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
 
     #rating-dict
     if current_user not in st.session_state.ratings:
-        st.session_state.ratings[current_user]
+        st.session_state.ratings[current_user] = {}
     user_ratings = st.session_state.ratings[current_user]
     
    
@@ -139,7 +139,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
         #save the rating for this user
         user_ratings[row["track_id"]] = rating
 
-        st.session_state.ratings[row["track_id"]] = rating
+        st.session_state.ratings[current_user] = user_ratings
     
 if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
     if st.button("Generate Final Playlist"):
@@ -190,25 +190,6 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
         # Annahme: Songs zur Bewertung in chronologischer Abfolge unter songs_df abgespeichert. sollte stimmen
         rated_track_ids = list(st.session_state.ratings.keys())
         
-        # Ratings from streamlit per user
-        ratings_user1 = [
-            st.session_state.ratings[track_id]
-            for track_id in rated_track_ids
-        ]# numbers from 1-5, as a list for each song 
-        #ratings_user2 = rating.user2   # activate them
-        #ratings_user3 = rating.user3   # @Loris vielleicht noch Name anpassen damits deine Zahlen übernimmt
-        #ratings_user4 = rating.user4
-        #ratings_user5 = rating.user5
-        
-        # dictionary of "user" - rating pairs
-        user_ratings = {
-            "user1": ratings_user1,
-         #   "user2": ratings_user2,
-         #   "user3": ratings_user3,
-         #   "user4": ratings_user4,
-         #   "user5": ratings_user5
-            # add more users if necessary
-            }
         
         # define function to create seed vector per user
         
