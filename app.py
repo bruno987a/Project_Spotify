@@ -183,12 +183,12 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
             features = pd.read_csv("data/reduced_features.csv", index_col=0)  # track_id as index
         
             feature_cols = [
-            "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
-            "mfcc_06_mean", "mfcc_07_mean", "mfcc_08_mean", "mfcc_09_mean", "mfcc_10_mean",
-            "rmse_01_mean",
-            "spectral_centroid_01_mean",
-            "spectral_bandwidth_01_mean",
-            "chroma_var"
+                "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
+                "mfcc_06_mean", "mfcc_07_mean", "mfcc_08_mean", "mfcc_09_mean", "mfcc_10_mean",
+                "rmse_01_mean",
+                "spectral_centroid_01_mean",
+                "spectral_bandwidth_01_mean",
+                "chroma_var"
             ]
             features_14 = features[feature_cols].copy()
         
@@ -210,13 +210,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
         #     metric="cosine"
         # )
         # knn_model.fit(X)
-        
-        
-        # Rated songs in form of a list in the same order as ratings, ist falsch geratete Liste ist ein dict!!! zugeordnet zur track_id!!!
-        # Annahme: Songs zur Bewertung in chronologischer Abfolge unter songs_df abgespeichert. sollte stimmen
-            rated_track_ids = list(st.session_state.ratings.keys())
-        
-        
+           
         # define function to create seed vector per user
         
             def build_user_profile(ratings_list, rated_track_ids, features_14_scaled):
@@ -255,7 +249,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                 ratings_list = [rating_dict[tid] for tid in rated_track_ids]
 
                 if len(rated_track_ids) == 0:
-                continue
+                    continue
 
                 profile = build_user_profile(ratings_list, rated_track_ids, features_14_scaled)
                 user_profiles.append(profile)
@@ -297,6 +291,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
         
         # final function call
             recommended_ids = recommend(group_vector, n_desired_songs).tolist()
+            st.sesstion_state.recommended_ids = recommended_ids
 
 # -------------------------
 # END MACHINE LEARNING
