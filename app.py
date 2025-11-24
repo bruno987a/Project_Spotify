@@ -60,11 +60,22 @@ if st.session_state.step >= 2:
     chosen_genre = genre_map[key_genre]                                                                #the selected genre gets maped to the associated number 
     n_desired_songs = st.slider("Select desired playlist length (songs):", 5, 30, 15)                  #the user choses the number of recommended songs
 
+    num_users = st.slider("How many people will rate?", 1, 5, 1) 
 
-# button for continuing the workflow and start the rating process    
+    # button for continuing the workflow and start the rating process   
+
     if st.button("Confirm and Continue"):                                                                    
         st.session_state.criteria_confirmed = True
         st.session_state.step = 3
+        
+        #store parameters in session_state
+        st.session_state.chosen_genre = chosen_genre
+        st.session_state.n_desired_songs = n_desired_songs
+        st.session_state.num_users = num_users
+
+        st.session_state.current_user_idx = 0
+
+    
         st.success("Preferences saved. Proceed to Quick Evaluation.")
 
 
@@ -75,18 +86,30 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
     st.header("Step 2 – Quick song evaluation")
     st.write("Please rate the following songs:")
 
+    num_users = st.session_state.num_users
+    current_idx = st.session_state.get("current_user_idx", 0)
+
+    st.caption(f"Rater {current_idx + 1} of {num_users}")
+
+    # --- Name of current user ---
+    default_name = f"User {current_idx + 1}"
+    name_key = f"user_name_{current_idx}"
+
+
     #Who is rating
     current_user = st.text_input(
         "Who is rating?", value=st.session_state.current_user,
-        help="Enter your name here")
+        help="Enter your name here",
+        key=name_key,
+    )
     
     #Fallback, if someone leaves it empty
     if not current_user.strip():
-        current_user = "User 1"
+        current_user = default_name
 
     st.session_state.current_user = current_user
 
-    #rating-dict
+    #rating-dict for current user
     if current_user not in st.session_state.ratings:
         st.session_state.ratings[current_user] = {}
     user_ratings = st.session_state.ratings[current_user]
@@ -114,9 +137,9 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
             to_rate = pd.concat(p_to_rate)
         return to_rate
 
-    # Display songs with rating buttons
+    # same songs for everyone
     if "candidate_songs" not in st.session_state: 
-        st.session_state.candidate_songs = rand_track_genre(chosen_genre, 5) # hier noch auswahl der anzahl songs ermöglichen evtl.
+        st.session_state.candidate_songs = rand_track_genre(st.session_state.chosen_genre, 5) # hier noch auswahl der anzahl songs ermöglichen evtl.
 
     songs_df = st.session_state.candidate_songs
 
@@ -139,13 +162,16 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
         #save the rating for this user
         user_ratings[row["track_id"]] = rating
 
-        st.session_state.ratings[current_user] = user_ratings
-    
-if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
-    if st.button("Generate Final Playlist"):
-        st.session_state.evaluation_done = True
-        st.session_state.step = 4
-        st.success("Evaluation submitted! Proceed to Final Playlist.")
+    st.session_state.ratings[current_user] = user_ratings
+
+    if current_idx < num_users - 1: 
+        if st.button("Next person"):
+            st.session.state.current_user_idx = current_idx + 1 
+            st.experimental_rerun()
+    else: 
+        if st.button("Generate final playlist"):
+            st.session_state.evaluation_done = True
+            st.session_state.step = 4
     
     
     # ------------------------------
@@ -154,22 +180,22 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
     
         # Vector definition with computed features
         
-        features = pd.read_csv("data/reduced_features.csv", index_col=0)  # track_id as index
+            features = pd.read_csv("data/reduced_features.csv", index_col=0)  # track_id as index
         
-        feature_cols = [
+            feature_cols = [
             "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
             "mfcc_06_mean", "mfcc_07_mean", "mfcc_08_mean", "mfcc_09_mean", "mfcc_10_mean",
             "rmse_01_mean",
             "spectral_centroid_01_mean",
             "spectral_bandwidth_01_mean",
             "chroma_var"
-        ]
-        features_14 = features[feature_cols].copy()
+            ]
+            features_14 = features[feature_cols].copy()
         
-        scaler = StandardScaler()
-        X_14 = scaler.fit_transform(features_14)
+            scaler = StandardScaler()
+            X_14 = scaler.fit_transform(features_14)
         
-        features_14_scaled = pd.DataFrame(X_14, index=features.index, columns=feature_cols)
+            features_14_scaled = pd.DataFrame(X_14, index=features.index, columns=feature_cols)
         
         # Nearest Neighbours setup and function call
         
@@ -188,89 +214,89 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
         
         # Rated songs in form of a list in the same order as ratings, ist falsch geratete Liste ist ein dict!!! zugeordnet zur track_id!!!
         # Annahme: Songs zur Bewertung in chronologischer Abfolge unter songs_df abgespeichert. sollte stimmen
-        rated_track_ids = list(st.session_state.ratings.keys())
+            rated_track_ids = list(st.session_state.ratings.keys())
         
         
         # define function to create seed vector per user
         
-        def build_user_profile(ratings_list, rated_track_ids, features_14_scaled):
-            """
-            ratings_list: Liste von Ratings (1–5), gleiche Reihenfolge wie rated_track_ids
-            rated_track_ids: Liste der track_ids aus songs_df
-            features_df: features_14_scaled (index = track_id), muss ev. noch assigned werden
-            """
+            def build_user_profile(ratings_list, rated_track_ids, features_14_scaled):
+                """
+                ratings_list: Liste von Ratings (1–5), gleiche Reihenfolge wie rated_track_ids
+                rated_track_ids: Liste der track_ids aus songs_df
+                features_df: features_14_scaled (index = track_id), muss ev. noch assigned werden
+                """
         
             # Convert ratings to Numpy arrays
-            ratings = np.asarray(ratings_list, dtype=float)
+                ratings = np.asarray(ratings_list, dtype=float)
         
             # Set vectors of rated songs
-            vecs = features_14_scaled.loc[rated_track_ids].values          # Shape: (n_rated, 14)
+                vecs = features_14_scaled.loc[rated_track_ids].values          # Shape: (n_rated, 14)
         
             # Weighted Average (Ratings = weights)
-            profile_vector = np.average(vecs, axis=0, weights=ratings)
+                profile_vector = np.average(vecs, axis=0, weights=ratings)
         
-            return profile_vector    # Shape: (14,)
+                return profile_vector    # Shape: (14,)
         
         # Collect all seed vector of users into a list
         
-        user_profiles = []
+            user_profiles = []
 
         #username to track id: rating, continue if not rated 
-        for username, rating_dict in st.session_state.ratings.items():
-            if not rating_dict:
-                continue 
+            for username, rating_dict in st.session_state.ratings.items():
+                if not rating_dict:
+                    continue 
 
         #Track-IDs and Ratings of this user
-            rated_track_ids = list(rating_dict.keys())
-            ratings_list = [rating_dict[tid] for tid in rated_track_ids]
-
+                rated_track_ids = list(rating_dict.keys())
+               
+    
         #only use tracks, for wich we have features
-            rated_track_ids = [tid for tid in rated_track_ids if tid in features_14_scaled.index]
-            ratings_list = [rating_dict[tid] for tid in rated_track_ids]
+                rated_track_ids = [tid for tid in rated_track_ids if tid in features_14_scaled.index]
+                ratings_list = [rating_dict[tid] for tid in rated_track_ids]
 
-            if len(rated_track_ids) == 0:
+                if len(rated_track_ids) == 0:
                 continue
 
-            profile = build_user_profile(ratings_list, rated_track_ids, features_14_scaled)
-            user_profiles.append(profile)
+                profile = build_user_profile(ratings_list, rated_track_ids, features_14_scaled)
+                user_profiles.append(profile)
 
-        if len(user_profiles) == 0:
-            st.error("There are no ratings - no recommendation possible.")
-            st.stop()
-        
+            if len(user_profiles) == 0:
+                st.error("There are no ratings - no recommendation possible.")
+                st.stop()
+            
         
         # Group vector representing music taste = average of user profiles
         
-        group_profile = np.mean(user_profiles, axis=0)   # Shape: (14,)
+            group_profile = np.mean(user_profiles, axis=0)   # Shape: (14,)
         
         # Adjustment instruments for emphazising certain features
         
-        group_vector = group_profile.copy()
+            group_vector = group_profile.copy()
         
         # give more weight to one feature  (e.g. factor 1.5)
-        feature_name_to_boost = "rmse_01_mean"   # <- change as desired
-        if feature_name_to_boost in feature_cols:
-            idx = feature_cols.index(feature_name_to_boost)
-            group_vector[idx] *= 1.5
+            feature_name_to_boost = "rmse_01_mean"   # <- change as desired
+            if feature_name_to_boost in feature_cols:
+                idx = feature_cols.index(feature_name_to_boost)
+                group_vector[idx] *= 1.5
         
         # can add multiple of these blocks for more control over algorithm
         
         # --- kNN-Setup  ---
         
-        X = features_14_scaled.values                     # Matrix (n_tracks, 14)
-        track_ids = features_14_scaled.index.to_numpy()   # Track-IDs in the same order
+            X = features_14_scaled.values                     # Matrix (n_tracks, 14)
+            track_ids = features_14_scaled.index.to_numpy()   # Track-IDs in the same order
         
-        knn_model = NearestNeighbors(metric="cosine", n_neighbors=200)
-        knn_model.fit(X)
+            knn_model = NearestNeighbors(metric="cosine", n_neighbors=200)
+            knn_model.fit(X)
         
         # Simple function design
         
-        def recommend(group_vec, n_desired_songs):
-            _, idx = knn_model.kneighbors(group_vec.reshape(1, -1), n_neighbors=n_desired_songs)
-            return track_ids[idx[0]]
+            def recommend(group_vec, n_desired_songs):
+                _, idx = knn_model.kneighbors(group_vec.reshape(1, -1), n_neighbors=n_desired_songs)
+                return track_ids[idx[0]]
         
         # final function call
-        recommended_ids = recommend(group_vector, n_desired_songs).tolist()
+            recommended_ids = recommend(group_vector, n_desired_songs).tolist()
 
 # -------------------------
 # END MACHINE LEARNING
@@ -281,7 +307,12 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
     st.header("Step 3 – Your final recommended playlist")
     st.write("Generated based on your preferences and evaluations:")
 
-    df_final = s_t[s_t["track_id"].isin(recommended_ids)][["title", "artist"]]
+    t = pd.read_csv("data/tracks_small.csv")
+    s_t_simple = t[["track_id", "title", "artist"]]
+
+    recommended_ids = st.session_state.get("recommended_ids", [])
+    df_final = s_t_simple[s_t_simple["track_id"].isin(recommended_ids)][["title", "artist"]]
+
     st.dataframe(df_final, use_container_width=True)
 
     st.markdown("**Summary:**")
