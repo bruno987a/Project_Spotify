@@ -167,7 +167,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
     if current_idx < num_users - 1: 
         if st.button("Next person"):
             st.session_state.current_user_idx = current_idx + 1 
-            st.experimental_rerun()
+    
     else: 
         if st.button("Generate final playlist"):
             st.session_state.evaluation_done = True
