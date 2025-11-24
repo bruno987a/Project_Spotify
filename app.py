@@ -5,23 +5,6 @@ import random
 from sklearn.neighbors import NearestNeighbors #Machine Learning algorithm @Lorenz
 from sklearn.preprocessing import StandardScaler
 
-# cookie manager: add after imports
-try:
-    from streamlit_cookies_manager import EncryptedCookieManager
-except Exception:
-    EncryptedCookieManager = None
-
-import os
-import json
-
-COOKIES_PASSWORD = os.environ.get("COOKIES_PASSWORD", "dev-secret-please-change")
-cookies = None
-if EncryptedCookieManager is not None:
-    cookies = EncryptedCookieManager(prefix="project_spotify/", password=COOKIES_PASSWORD)
-    # ensure cookies are loaded before continuing
-    if not cookies.ready():
-        st.stop()
-
 candidate_songs = []
 
 # -------------------------
@@ -31,38 +14,7 @@ st.set_page_config(page_title="Smart Playlist Generator", page_icon="🎧", layo
 
 st.title("Smart Playlist Generator")
 st.markdown("Create personalized playlists based on your musical preferences and feedback.")
-# cookie helper functions
-def cookie_get(key, default=None):
-    if not cookies:
-        return default
-    val = cookies.get(key)
-    return val if val is not None else default
 
-def cookie_set(key, val):
-    if not cookies:
-        return
-    # store JSON serializable values; pass dict/list or primitives
-    # the manager handles primitives, but we may store JSON strings for complex objects
-    try:
-        cookies[key] = val
-    except Exception:
-        cookies[key] = json.dumps(val)
-
-def cookie_delete(key):
-    if not cookies:
-        return
-    try:
-        del cookies[key]
-    except Exception:
-        pass
-
-def cookie_save():
-    if cookies:
-        try:
-            cookies.save()
-        except Exception:
-            pass
-        
 # Initialize session state for progress tracking
 if "step" not in st.session_state:
     st.session_state.step = 2
