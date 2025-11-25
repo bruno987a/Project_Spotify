@@ -8,8 +8,16 @@ from sklearn.preprocessing import StandardScaler
 
 candidate_songs = []
 
-# Set up connection to Database
+# Set up pathways to data folder
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR / "data"
 
+
+# Set up SQLite connection to database as DB
+def get_conn():
+    return sqlite3.connect(DATA_DIR / "app.db")
+
+DB = get_conn()
 
 
 
