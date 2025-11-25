@@ -9,7 +9,7 @@ DATA_DIR = BASE_DIR / "data"
 # read CSVs
 genres = pd.read_csv(DATA_DIR / "genre_with_main_identity.csv")
 tracks_small = pd.read_csv(DATA_DIR / "tracks_small.csv")
-features = pd.read_csv(DATA_DIR / "features.csv", index_col=0)  # track_id index
+features = pd.read_csv(DATA_DIR / "reduced_features.csv", index_col=0)  # track_id index
 
 # set up SQLite database file
 DB = sqlite3.connect(DATA_DIR / "app.db")
