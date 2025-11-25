@@ -1,4 +1,5 @@
 import streamlit as st
+import sqlite3
 import pandas as pd
 import numpy as np
 import random
@@ -6,6 +7,11 @@ from sklearn.neighbors import NearestNeighbors #Machine Learning algorithm @Lore
 from sklearn.preprocessing import StandardScaler
 
 candidate_songs = []
+
+# Set up connection to Database
+
+
+
 
 # -------------------------
 # Streamlit app setup
