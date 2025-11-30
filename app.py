@@ -201,7 +201,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
     if idx_rater < len(rater_names) - 1:
         if st.button("Save ratings & Next person"):
             st.session_state.active_rater_idx += 1
-            st.experimental_rerun()
+            st.rerun()
     else:
         # allow generation for last rater
         if st.button("Generate Final Playlist"):
