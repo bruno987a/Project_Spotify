@@ -102,16 +102,17 @@ if st.session_state.step >= 1 and not st.session_state.criteria_confirmed:
 # -------------------------
 if st.session_state.step >= 2:
     st.header("Step 1 – Playlist generation criteria")
+    
     similarity = st.selectbox("Select similarity level:",
-    ["None", "Genre", "Artist", "Mixed"],
-    index=0,  # default selection is "None"
-    format_func=lambda x: f"*{x}*" if x=="None" else x,
-    key="similarity")
+        ["None", "Genre", "Artist", "Mixed"],
+        index=0,  # default selection is "None"
+        format_func=lambda x: f"*{x}*" if x=="None" else x,
+        key="similarity")
 
 # Song selecetion for rating 
     genre_map = {"Rock/Metal/Punk": 1, "Pop/Synth": 2, "Electronic/IDM": 3, "Hip-Hop/RnB": 4,    
-    "Jazz/Blues": 5, "Classical": 6, "Folk/Country/Americana": 7, "World/Reggae/Latin": 8,
-    "Experimental/Sound Art": 9, "Spoken/Soundtrack/Misc": 10, "Funk": 11}   
+        "Jazz/Blues": 5, "Classical": 6, "Folk/Country/Americana": 7, "World/Reggae/Latin": 8,
+        "Experimental/Sound Art": 9, "Spoken/Soundtrack/Misc": 10, "Funk": 11}   
 
     key_genre = st.selectbox("Select Genre:", list(genre_map.keys()))                                  #the user choses his genre he wishes, recommendations for 
     st.session_state.chosen_genre = genre_map[key_genre]
@@ -120,14 +121,14 @@ if st.session_state.step >= 2:
 
 
 # button for continuing the workflow and start the rating process    
-   if st.button("Confirm and Continue"):
-    st.session_state.criteria_confirmed = True
-    st.session_state.step = 3
-    st.session_state.evaluation_done = False
-    st.session_state.active_rater_idx = 0
-    if "candidate_songs" in st.session_state:
-        del st.session_state.candidate_songs  # force same set to be regenerated for this run
-    st.success("Preferences saved. Proceed to Quick Evaluation.")
+    if st.button("Confirm and Continue"):
+        st.session_state.criteria_confirmed = True
+        st.session_state.step = 3
+        st.session_state.evaluation_done = False
+        st.session_state.active_rater_idx = 0
+        if "candidate_songs" in st.session_state:
+            del st.session_state.candidate_songs  # force same set to be regenerated for this run
+        st.success("Preferences saved. Proceed to Quick Evaluation.")
 
 
 # -------------------------
