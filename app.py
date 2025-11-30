@@ -101,7 +101,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
 
     #rating-dict
     if current_user not in st.session_state.ratings:
-        st.session_state.ratings[current_user]
+        st.session_state.ratings[current_user] = {}
     user_ratings = st.session_state.ratings[current_user]
     
    
@@ -144,15 +144,13 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
             min_value=1,
             max_value=5,
             value=3,
-            key=f"rating_{idx}",
+            key=f"rating_{current_user}_{idx}",
             label_visibility="collapsed",
             step=1,
         )
 
         #save the rating for this user
         user_ratings[row["track_id"]] = rating
-
-        st.session_state.ratings[row["track_id"]] = rating
     
 if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
     if st.button("Generate Final Playlist"):
