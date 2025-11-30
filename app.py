@@ -31,27 +31,71 @@ st.title("Smart Playlist Generator")
 st.markdown("Create personalized playlists based on your musical preferences and feedback.")
 
 # Initialize session state for progress tracking
+# Initialize session state
 if "step" not in st.session_state:
-    st.session_state.step = 2
+    st.session_state.step = 1   # start at group setup
+
+if "num_raters" not in st.session_state:
+    st.session_state.num_raters = 1
+
+if "rater_names" not in st.session_state:
+    st.session_state.rater_names = ["User 1"]
+
+if "active_rater_idx" not in st.session_state:
+    st.session_state.active_rater_idx = 0
 
 if "ratings" not in st.session_state:
     st.session_state.ratings = {}
 
-if "current_user" not in st.session_state:
-    st.session_state.current_user = "User 1"
-
 if "criteria_confirmed" not in st.session_state:
     st.session_state.criteria_confirmed = False
-    
+
 if "evaluation_done" not in st.session_state:
     st.session_state.evaluation_done = False
 
+# store preferences
+if "chosen_genre" not in st.session_state:
+    st.session_state.chosen_genre = None
 
+if "n_desired_songs" not in st.session_state:
+    st.session_state.n_desired_songs = 15
 
 # -------------------------
-# STEP 1 — Import Playlist
+# ---------Group Setup
 # -------------------------
-#deleted
+if st.session_state.step >= 1 and not st.session_state.criteria_confirmed:
+    st.header("Step 0 – Group setup")
+
+    num = st.number_input(
+        "How many people are going to rate?",
+        min_value=1,
+        max_value=10,
+        value=int(st.session_state.num_raters),
+        step=1,
+        key="num_raters_input"
+    )
+
+    # name inputs
+    names = []
+    for i in range(int(num)):
+        default_name = st.session_state.rater_names[i] if i < len(st.session_state.rater_names) else f"User {i+1}"
+        names.append(
+            st.text_input(f"Rater {i+1} name", value=default_name, key=f"rater_name_{i}")
+        )
+
+    if st.button("Confirm group"):
+        clean_names = [(n.strip() or f"User {i+1}") for i, n in enumerate(names)]
+        st.session_state.num_raters = int(num)
+        st.session_state.rater_names = clean_names
+
+        # initialize ratings dict per person
+        st.session_state.ratings = {name: {} for name in clean_names}
+
+        st.session_state.active_rater_idx = 0
+        st.session_state.step = 2
+        st.success("Group saved. Proceed to playlist criteria.")
+
+
 
 # -------------------------
 # STEP 2 — Generation Criteria
@@ -70,95 +114,157 @@ if st.session_state.step >= 2:
     "Experimental/Sound Art": 9, "Spoken/Soundtrack/Misc": 10, "Funk": 11}   
 
     key_genre = st.selectbox("Select Genre:", list(genre_map.keys()))                                  #the user choses his genre he wishes, recommendations for 
-    chosen_genre = genre_map[key_genre]                                                                #the selected genre gets maped to the associated number 
-    n_desired_songs = st.slider("Select desired playlist length (songs):", 5, 30, 15)                  #the user choses the number of recommended songs
+    st.session_state.chosen_genre = genre_map[key_genre]
+    st.session_state.n_desired_songs = st.slider("Select desired playlist length (songs):", 5, 30, 15)
+
 
 
 # button for continuing the workflow and start the rating process    
-    if st.button("Confirm and Continue"):                                                                    
-        st.session_state.criteria_confirmed = True
-        st.session_state.step = 3
-        st.success("Preferences saved. Proceed to Quick Evaluation.")
+   if st.button("Confirm and Continue"):
+    st.session_state.criteria_confirmed = True
+    st.session_state.step = 3
+    st.session_state.evaluation_done = False
+    st.session_state.active_rater_idx = 0
+    if "candidate_songs" in st.session_state:
+        del st.session_state.candidate_songs  # force same set to be regenerated for this run
+    st.success("Preferences saved. Proceed to Quick Evaluation.")
 
 
 # -------------------------
 # STEP 3 — Quick Evaluation
 # -------------------------
-if st.session_state.step >= 3 and st.session_state.criteria_confirmed:  
+if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
     st.header("Step 2 – Quick song evaluation")
+
+    rater_names = st.session_state.rater_names
+    idx_rater = st.session_state.active_rater_idx
+    current_user = rater_names[idx_rater]
+
+    st.write(f"Rater **{idx_rater + 1} / {len(rater_names)}**: **{current_user}**")
     st.write("Please rate the following songs:")
 
-    #Who is rating
-    current_user = st.text_input(
-        "Who is rating?", value=st.session_state.current_user,
-        help="Enter your name here")
-    
-    #Fallback, if someone leaves it empty
-    if not current_user.strip():
-        current_user = "User 1"
-
-    st.session_state.current_user = current_user
-
-    #rating-dict
-    if current_user not in st.session_state.ratings:
-        st.session_state.ratings[current_user] = {}
+    # make sure this user's dict exists
+    st.session_state.ratings.setdefault(current_user, {})
     user_ratings = st.session_state.ratings[current_user]
-    
-   
+
     from ast import literal_eval
     from random import choice
-    
-    gmi = pd.read_csv("data/genre_with_main_identity.csv")                              #reading the data for the genres
-    s_genres = gmi[["genre_id", "main_category_id"]]                                    #the gmi gets reduced to two data points
 
-    t = pd.read_csv("data/tracks_small.csv")  #importing the data for the tracks
-    s_t = pd.DataFrame({"track_id": t["track_id"], "genres_all": t["genres_all"].fillna("[]").apply(literal_eval), "title": t["title"], "artist": t["artist"]}) 
+    gmi = pd.read_csv("data/genre_with_main_identity.csv")
+    s_genres = gmi[["genre_id", "main_category_id"]]
+
+    t = pd.read_csv("data/tracks_small.csv")
+    s_t = pd.DataFrame({
+        "track_id": t["track_id"],
+        "genres_all": t["genres_all"].fillna("[]").apply(literal_eval),
+        "title": t["title"],
+        "artist": t["artist"]
+    })
 
     def rand_track_genre(main_cat_id, n):
         genre_ids = list(set(s_genres.loc[s_genres["main_category_id"] == main_cat_id, "genre_id"]))
-    
-        rand_gen_l = [choice(genre_ids) for dig in range(n)]
-        
+        rand_gen_l = [choice(genre_ids) for _ in range(n)]
+
         p_to_rate = []
-    
         for g_id in rand_gen_l:
             poss_songs = s_t[s_t["genres_all"].apply(lambda ids: g_id in ids)]
             p_to_rate.append(poss_songs.sample(1))
-            to_rate = pd.concat(p_to_rate)
-        return to_rate
+        return pd.concat(p_to_rate, ignore_index=True)
 
-    # Display songs with rating buttons
-    if "candidate_songs" not in st.session_state: 
-        st.session_state.candidate_songs = rand_track_genre(chosen_genre, 5) # hier noch auswahl der anzahl songs ermöglichen evtl.
+    # Generate candidate songs ONCE for the whole group
+    if "candidate_songs" not in st.session_state:
+        st.session_state.candidate_songs = rand_track_genre(st.session_state.chosen_genre, 5)
 
     songs_df = st.session_state.candidate_songs
 
-    for idx, (track_id, row) in enumerate(songs_df.iterrows()):
+    for i, row in songs_df.iterrows():
         c1, c2, c3 = st.columns([4, 4, 3])
 
         c1.write(row["title"])
         c2.write(row["artist"])
 
         rating = c3.slider(
-            label="", 
+            label="",
             min_value=1,
             max_value=5,
-            value=3,
-            key=f"rating_{current_user}_{idx}",
+            value=int(user_ratings.get(row["track_id"], 3)),
+            key=f"rating_{current_user}_{i}",   # IMPORTANT: per-user widget keys
             label_visibility="collapsed",
             step=1,
         )
 
-        #save the rating for this user
+        # save per-user (and ONLY per-user)
         user_ratings[row["track_id"]] = rating
-    
-if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
-    if st.button("Generate Final Playlist"):
-        st.session_state.evaluation_done = True
-        st.session_state.step = 4
-        st.success("Evaluation submitted! Proceed to Final Playlist.")
-    
-    
+
+    # Buttons to go to next person
+    if idx_rater < len(rater_names) - 1:
+        if st.button("Save ratings & Next person"):
+            st.session_state.active_rater_idx += 1
+            st.experimental_rerun()
+    else:
+        # allow generation for last rater
+        if st.button("Generate Final Playlist"):
+            st.session_state.evaluation_done = True
+            st.session_state.step = 4
+            st.success("All ratings collected! Proceed to Final Playlist.")
+
+            # ------------------------------
+            # START MACHINE LEARNING PART
+            # ------------------------------
+            features = pd.read_csv("data/reduced_features.csv", index_col=0)
+
+            feature_cols = [
+                "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
+                "mfcc_06_mean", "mfcc_07_mean", "mfcc_08_mean", "mfcc_09_mean", "mfcc_10_mean",
+                "rmse_01_mean",
+                "spectral_centroid_01_mean",
+                "spectral_bandwidth_01_mean",
+                "chroma_var"
+            ]
+            features_14 = features[feature_cols].copy()
+
+            scaler = StandardScaler()
+            X_14 = scaler.fit_transform(features_14)
+            features_14_scaled = pd.DataFrame(X_14, index=features.index, columns=feature_cols)
+
+            def build_user_profile(ratings_list, rated_ids, features_df):
+                ratings = np.asarray(ratings_list, dtype=float)
+                vecs = features_df.loc[rated_ids].values
+                return np.average(vecs, axis=0, weights=ratings)
+
+            user_profiles = []
+            for username, rating_dict in st.session_state.ratings.items():
+                if not rating_dict:
+                    continue
+
+                rated_ids = [tid for tid in rating_dict.keys() if tid in features_14_scaled.index]
+                if not rated_ids:
+                    continue
+
+                ratings_list = [rating_dict[tid] for tid in rated_ids]
+                user_profiles.append(build_user_profile(ratings_list, rated_ids, features_14_scaled))
+
+            if len(user_profiles) == 0:
+                st.error("There are no usable ratings - no recommendation possible.")
+                st.stop()
+
+            group_vector = np.mean(user_profiles, axis=0)
+
+            X = features_14_scaled.values
+            track_ids = features_14_scaled.index.to_numpy()
+
+            knn_model = NearestNeighbors(metric="cosine", n_neighbors=200)
+            knn_model.fit(X)
+
+            def recommend(group_vec, n_songs):
+                _, nn_idx = knn_model.kneighbors(group_vec.reshape(1, -1), n_neighbors=n_songs)
+                return track_ids[nn_idx[0]]
+
+            recommended_ids = recommend(group_vector, st.session_state.n_desired_songs).tolist()
+
+            # store for step 4
+            st.session_state.recommended_ids = recommended_ids
+
     # ------------------------------
     # START MACHINE LEARNING PART
     # ------------------------------
@@ -311,17 +417,22 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
     st.header("Step 3 – Your final recommended playlist")
     st.write("Generated based on your preferences and evaluations:")
 
-    df_final = s_t[s_t["track_id"].isin(recommended_ids)][["title", "artist"]]
+    df_final = s_t[s_t["track_id"].isin(st.session_state.recommended_ids)][["title", "artist"]]
     st.dataframe(df_final, use_container_width=True)
 
     st.markdown("**Summary:**")
     st.write(f"- Total songs: {len(df_final)}")
 
     if st.button("Start Over"):
-        st.session_state.step = 2
+        st.session_state.step = 1
         st.session_state.ratings = {}
         st.session_state.criteria_confirmed = False
         st.session_state.evaluation_done = False
+        st.session_state.active_rater_idx
+        if "candidate_songs" in st.session_state:
+            del st.session_state.candidate_songs
+        if "recommended_ids" in st.session_state:
+            del st.session_state.recommended_ids
         st.experimental_rerun()
 
     st.button("Save Playlist to Spotify (coming soon)")
