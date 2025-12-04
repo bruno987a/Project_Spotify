@@ -110,13 +110,13 @@ if st.session_state.step >= 2:
         key="similarity")
 
 # Song selecetion for rating 
-    genre_map = {"Rock/Metal/Punk": 1, "Pop/Synth": 2, "Electronic/IDM": 3, "Hip-Hop/RnB": 4,    
+    genre_map = {"Rock/Metal/Punk": 1, "Pop/Synth": 2, "Electronic/IDM": 3, "Hip-Hop/RnB": 4,          #implementing the main genres in a dictionary
         "Jazz/Blues": 5, "Classical": 6, "Folk/Country/Americana": 7, "World/Reggae/Latin": 8,
         "Experimental/Sound Art": 9, "Spoken/Soundtrack/Misc": 10, "Funk": 11}   
 
     key_genre = st.selectbox("Select Genre:", list(genre_map.keys()))                                  #the user choses his genre he wishes, recommendations for 
-    st.session_state.chosen_genre = genre_map[key_genre]
-    st.session_state.n_desired_songs = st.slider("Select desired playlist length (songs):", 5, 30, 15)
+    st.session_state.chosen_genre = genre_map[key_genre]                                               #Mapping back the chosen genre name on the matching number 
+    st.session_state.n_desired_songs = st.slider("Select desired playlist length (songs):", 5, 30, 15) #Slider to decide, how long the playlist should be
 
 
 
@@ -151,25 +151,25 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
     from ast import literal_eval
     from random import choice
 
-    gmi = pd.read_csv("data/genre_with_main_identity.csv")
-    s_genres = gmi[["genre_id", "main_category_id"]]
+    gmi = pd.read_csv("data/genre_with_main_identity.csv")                                                    #reading in the list with all subgenres linked with the main genres
+    s_genres = gmi[["genre_id", "main_category_id"]]                                                          #filtering out the needed genre column
 
-    t = pd.read_csv("data/tracks_small.csv")
-    s_t = pd.DataFrame({
+    t = pd.read_csv("data/tracks_small.csv")                                                                  #importing the table with the tracks
+    s_t = pd.DataFrame({                                                                                      #clean out the table whilst implementing it as a dataframe 
         "track_id": t["track_id"],
-        "genres_all": t["genres_all"].fillna("[]").apply(literal_eval),
+        "genres_all": t["genres_all"].fillna("[]").apply(literal_eval),                                       #we're changing the Genre numbers from type string to actual python format, empty ones would be transfered to []
         "title": t["title"],
         "artist": t["artist"]
     })
 
-    def rand_track_genre(main_cat_id, n):
-        genre_ids = list(set(s_genres.loc[s_genres["main_category_id"] == main_cat_id, "genre_id"]))
-        rand_gen_l = [choice(genre_ids) for _ in range(n)]
+    def rand_track_genre(main_cat_id, n):                                                                     #implementing the function giving out random songs, with input of number of songs to rate (n) and the chosen main genre (main_cat_id) 
+        genre_ids = list(set(s_genres.loc[s_genres["main_category_id"] == main_cat_id, "genre_id"]))          #constructing a list with all sub genres matching the chosen genre
+        rand_gen_l = [choice(genre_ids) for _ in range(n)]                                                    #creating a list with n randomly chosen sub genres out the just created list
 
         p_to_rate = []
-        for g_id in rand_gen_l:
-            poss_songs = s_t[s_t["genres_all"].apply(lambda ids: g_id in ids)]
-            p_to_rate.append(poss_songs.sample(1))
+        for g_id in rand_gen_l:                                                                               #for every randomly chosen sub genre we choose one song that has this sub genre in the following lines
+            poss_songs = s_t[s_t["genres_all"].apply(lambda ids: g_id in ids)]                                #we create a list of songs with the current sub genre g_id
+            p_to_rate.append(poss_songs.sample(1))                                                            #one of the songs gets randomly chosen from this list and appended to the list of songs that will be displayed for rating
         return pd.concat(p_to_rate, ignore_index=True)
 
     # Generate candidate songs ONCE for the whole group
