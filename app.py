@@ -151,10 +151,10 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
     from ast import literal_eval
     from random import choice
 
-    gmi = pd.read_csv("data/genre_with_main_identity.csv")                                                    #reading in the list with all subgenres linked with the main genres
+    gmi = pd.read_sql_query("SELECT * FROM genres", DB)                                                       #reading in the list with all subgenres linked with the main genres
     s_genres = gmi[["genre_id", "main_category_id"]]                                                          #filtering out the needed genre column
 
-    t = pd.read_csv("data/tracks_small.csv")                                                                  #importing the table with the tracks
+    t = pd.read_sql_query("SELECT * FROM songs", DB)                                                          #importing the table with the tracks
     s_t = pd.DataFrame({                                                                                      #clean out the table whilst implementing it as a dataframe 
         "track_id": t["track_id"],
         "genres_all": t["genres_all"].fillna("[]").apply(literal_eval),                                       #we're changing the Genre numbers from type string to actual python format, empty ones would be transfered to []
