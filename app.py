@@ -214,9 +214,8 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
             )
             st.caption("1 = dislike · 5 = love")
 
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    user_ratings[row["track_id"]] = rating
 
         # save per-user (and ONLY per-user)
         user_ratings[row["track_id"]] = rating
