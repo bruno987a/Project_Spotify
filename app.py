@@ -125,7 +125,7 @@ if st.session_state.step >= 1 and not st.session_state.criteria_confirmed:
 
         st.session_state.active_rater_idx = 0
         st.session_state.step = 2
-
+        st.success("Group saved. Proceed to playlist criteria.")
     # trigger a new run so the sidebar sees the new step immediately
         st.rerun()  # or st.experimental_rerun() on older Streamlit
     
