@@ -193,21 +193,30 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
 
     songs_df = st.session_state.candidate_songs
 
+    st.markdown("### 🎵 Rate these songs")
+
     for i, row in songs_df.iterrows():
-        c1, c2, c3 = st.columns([4, 4, 3])
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        c1, c2 = st.columns([6, 4])
 
-        c1.write(row["title"])
-        c2.write(row["artist"])
+        with c1:
+            st.markdown(f"<div class='card-header'>{row['title']}</div>", unsafe_allow_html=True)
+            st.markdown(f"*{row['artist']}*", unsafe_allow_html=False)
 
-        rating = c3.slider(
-            label="",
-            min_value=1,
-            max_value=5,
-            value=int(user_ratings.get(row["track_id"], 3)),
-            key=f"rating_{current_user}_{i}",   # IMPORTANT: per-user widget keys
-            label_visibility="collapsed",
-            step=1,
-        )
+        with c2:
+            rating = st.slider(
+                label=f"Rating for {row['title']}",
+                min_value=1,
+                max_value=5,
+                value=int(user_ratings.get(row["track_id"], 3)),
+                key=f"rating_{current_user}_{i}",
+                step=1,
+            )
+            st.caption("1 = dislike · 5 = love")
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    user_ratings[row["track_id"]] = rating
 
         # save per-user (and ONLY per-user)
         user_ratings[row["track_id"]] = rating
