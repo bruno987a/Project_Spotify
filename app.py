@@ -195,9 +195,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
 
     st.markdown("### 🎵 Rate these songs")
 
-
-
-    # Header row (Songs / Rating)
+# Header row (Songs / Rating)
     header_song_col, header_rating_col = st.columns([3, 2])
     with header_song_col:
         st.markdown(
@@ -205,21 +203,25 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
             "border-radius:0.5rem 0 0 0.5rem; font-weight:600;'>Songs</div>",
             unsafe_allow_html=True,
         )
+
     with header_rating_col:
         st.markdown(
             "<div style='background-color:#f0f2f6; padding:0.5rem; "
-            "border-radius:0 0.5rem 0.5rem 0; font-weight:600;'>"
-            "Rating<br><span style='font-weight:400; font-size:0.8rem;'>"
-            "1 = dislike · 5 = love</span></div>",
+            "border-radius:0 0.5rem 0.5rem 0; font-weight:600; display:flex; "
+            "justify-content:space-between; align-items:center;'>"
+            "<span>Rating</span>"
+            "<span style='font-weight:400; font-size:0.75rem;'>1 = dislike · 5 = love</span>"
+            "</div>",
             unsafe_allow_html=True,
         )
 
-    # Data rows
+# Data rows
     for i, row in songs_df.iterrows():
         song_col, rating_col = st.columns([3, 2])
 
+        # SONG CELL
         with song_col:
-            st.markdown(
+         st.markdown(
                 f"""
                 <div style='background-color:#fafafa; padding:0.5rem; 
                             border-bottom:1px solid #e0e0e0;'>
@@ -230,9 +232,10 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                 unsafe_allow_html=True,
             )
 
+    # RATING CELL (NO LABEL)
         with rating_col:
             rating = st.slider(
-                label=f"Rating for {row['title']}",
+                label="",                # <-- removes the label
                 min_value=1,
                 max_value=5,
                 value=int(user_ratings.get(row["track_id"], 3)),
@@ -240,8 +243,9 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                 step=1,
             )
 
-        # Save per-user rating
+    # Save rating
         user_ratings[row["track_id"]] = rating
+
 
 
     # Buttons to go to next person
