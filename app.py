@@ -53,6 +53,9 @@ if "criteria_confirmed" not in st.session_state:
 if "evaluation_done" not in st.session_state:
     st.session_state.evaluation_done = False
 
+if "final_success_message" not in st.session_state:
+    st.session_state.final_success_message = False
+
 # store preferences
 if "chosen_genre" not in st.session_state:
     st.session_state.chosen_genre = None
