@@ -79,8 +79,7 @@ if "n_desired_songs" not in st.session_state:
 # ---------Group Setup
 # -------------------------
 if st.session_state.step >= 1 and not st.session_state.criteria_confirmed:
-    st.markdown("### 👥 Step 0 – Group setup")
-    st.caption("Define who is going to rate the songs.")
+    st.header("Step 0 – Group setup")
 
     num = st.number_input(
         "How many people are going to rate?",
