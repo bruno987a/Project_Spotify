@@ -153,34 +153,63 @@ if st.session_state.step >= 1:
 # -------------------------
 if st.session_state.step >= 2:
     st.header("Step 1 – Playlist generation criteria")
-    
-    similarity = st.selectbox("Select similarity level:",
-        ["None", "Genre", "Artist", "Mixed"],
-        index=0,  # default selection is "None"
-        format_func=lambda x: f"*{x}*" if x=="None" else x,
-        key="similarity")
 
-# Song selecetion for rating 
-    genre_map = {"Rock/Metal/Punk": 1, "Pop/Synth": 2, "Electronic/IDM": 3, "Hip-Hop/RnB": 4,          #implementing the main genres in a dictionary
-        "Jazz/Blues": 5, "Classical": 6, "Folk/Country/Americana": 7, "World/Reggae/Latin": 8,
-        "Experimental/Sound Art": 9, "Spoken/Soundtrack/Misc": 10, "Funk": 11}   
+    # BEFORE confirming → show full criteria form
+    if st.session_state.step == 2:
+        similarity = st.selectbox(
+            "Select similarity level:",
+            ["None", "Genre", "Artist", "Mixed"],
+            index=0,  # default selection is "None"
+            format_func=lambda x: f"*{x}*" if x == "None" else x,
+            key="similarity"
+        )
 
-    key_genre = st.selectbox("Select Genre:", list(genre_map.keys()))                                  #the user choses his genre he wishes, recommendations for 
-    st.session_state.chosen_genre = genre_map[key_genre]                                               #Mapping back the chosen genre name on the matching number 
-    st.session_state.n_desired_songs = st.slider("Select desired playlist length (songs):", 5, 30, 15) #Slider to decide, how long the playlist should be
+        # Song selection for rating 
+        genre_map = {
+            "Rock/Metal/Punk": 1, "Pop/Synth": 2, "Electronic/IDM": 3,
+            "Hip-Hop/RnB": 4, "Jazz/Blues": 5, "Classical": 6,
+            "Folk/Country/Americana": 7, "World/Reggae/Latin": 8,
+            "Experimental/Sound Art": 9, "Spoken/Soundtrack/Misc": 10,
+            "Funk": 11
+        }
 
+        key_genre = st.selectbox("Select Genre:", list(genre_map.keys()))
+        st.session_state.chosen_genre = genre_map[key_genre]
+        st.session_state.n_desired_songs = st.slider(
+            "Select desired playlist length (songs):",
+            5, 30, 15
+        )
 
+        # button for continuing the workflow and start the rating process    
+        if st.button("Confirm and Continue"):
+            st.session_state.criteria_confirmed = True
+            st.session_state.step = 3
+            st.session_state.evaluation_done = False
+            st.session_state.active_rater_idx = 0
+            if "candidate_songs" in st.session_state:
+                del st.session_state.candidate_songs
 
-# button for continuing the workflow and start the rating process    
-    if st.button("Confirm and Continue"):
-        st.session_state.criteria_confirmed = True
-        st.session_state.step = 3
-        st.session_state.evaluation_done = False
-        st.session_state.active_rater_idx = 0
-        if "candidate_songs" in st.session_state:
-            del st.session_state.candidate_songs
+            st.rerun()
 
-        st.rerun()
+    # AFTER confirming → show criteria summary
+    else:
+        reverse_genre_map = {
+            1: "Rock/Metal/Punk", 2: "Pop/Synth", 3: "Electronic/IDM",
+            4: "Hip-Hop/RnB", 5: "Jazz/Blues", 6: "Classical",
+            7: "Folk/Country/Americana", 8: "World/Reggae/Latin",
+            9: "Experimental/Sound Art", 10: "Spoken/Soundtrack/Misc",
+            11: "Funk"
+        }
+        chosen_genre_name = reverse_genre_map[st.session_state.chosen_genre]
+
+        st.info(
+            f"""
+🎛️ **Criteria selected**  
+• Similarity level: **{st.session_state.similarity}**  
+• Genre: **{chosen_genre_name}**  
+• Desired playlist length: **{st.session_state.n_desired_songs} songs**
+"""
+        )
 
 
 # -------------------------
