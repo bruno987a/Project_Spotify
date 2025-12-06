@@ -337,16 +337,13 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
     st.markdown("**Summary:**")
     st.write(f"- Total songs: {len(df_final)}")
 
-    if st.button("Start Over"):
-        st.session_state.step = 1
-        st.session_state.ratings = {}
-        st.session_state.criteria_confirmed = False
-        st.session_state.evaluation_done = False
-        st.session_state.active_rater_idx = 0
-        if "candidate_songs" in st.session_state:
-            del st.session_state.candidate_songs
-        if "recommended_ids" in st.session_state:
-            del st.session_state.recommended_ids
-        st.experimental_rerun()
+    if st.button(" Start Over"):
+        # Completely clear session state
+        for key in list(st.session_state.keys()):
+            del st.session_state[key]
+
+        # Rerun to reinitialize everything
+        st.rerun()  # use st.experimental_rerun() if your Streamlit version is older
+
 
 
