@@ -27,21 +27,6 @@ DB = get_conn()
 # -------------------------
 st.set_page_config(page_title="Smart Playlist Generator", page_icon="🎧", layout="wide")
 
-st.sidebar.title("🎧 Smart Playlist Generator")
-st.sidebar.caption("Group-based, ML-powered recommendations")
-
-# Simple step indicator
-steps = ["Group setup", "Criteria", "Quick evaluation", "Final playlist"]
-current_step = st.session_state.get("step", 1)
-
-for i, name in enumerate(steps, start=1):
-    if current_step == i:
-        st.sidebar.markdown(f"**➡️ Step {i}: {name}**")
-    elif current_step > i:
-        st.sidebar.markdown(f"✅ Step {i}: {name}")
-    else:
-        st.sidebar.markdown(f"⬜ Step {i}: {name}")
-
 st.title("Smart Playlist Generator")
 st.markdown("Create personalized playlists based on your musical preferences and feedback.")
 
@@ -74,6 +59,38 @@ if "chosen_genre" not in st.session_state:
 
 if "n_desired_songs" not in st.session_state:
     st.session_state.n_desired_songs = 15
+
+# -------------------------
+# Sidebar: progress indicator
+# -------------------------
+def render_sidebar():
+    st.sidebar.title("🎧 Smart Playlist")
+
+    # Define when each step is considered "done"
+    step0_done = st.session_state.step > 1                      # Confirmed group
+    step1_done = st.session_state.criteria_confirmed            # Confirmed criteria
+    step2_done = st.session_state.evaluation_done               # Pressed "Generate Final Playlist"
+    step3_done = st.session_state.step >= 4                     # At final playlist
+
+    steps = [
+        ("Step 0 – Group setup", step0_done),
+        ("Step 1 – Criteria", step1_done),
+        ("Step 2 – Quick evaluation", step2_done),
+        ("Step 3 – Final playlist", step3_done),
+    ]
+
+    current_step = st.session_state.step
+
+    for idx, (label, done) in enumerate(steps, start=1):
+        if done:
+            st.sidebar.markdown(f"✅ {label}")
+        elif idx == current_step:
+            st.sidebar.markdown(f"▶️ {label}")
+        else:
+            st.sidebar.markdown(f"▫️ {label}")
+
+render_sidebar()
+
 
 # -------------------------
 # ---------Group Setup
