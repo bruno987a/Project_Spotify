@@ -149,7 +149,7 @@ if st.session_state.step >= 1:
 
 
 # -------------------------
-# STEP 2 — Generation Criteria
+# STEP 1 — Generation Criteria
 # -------------------------
 if st.session_state.step >= 2:
     st.header("Step 1 – Playlist generation criteria")
@@ -200,12 +200,16 @@ if st.session_state.step >= 2:
             9: "Experimental/Sound Art", 10: "Spoken/Soundtrack/Misc",
             11: "Funk"
         }
-        chosen_genre_name = reverse_genre_map[st.session_state.chosen_genre]
+
+        # SAFE access with defaults
+        similarity_value = st.session_state.get("similarity", "None")
+        chosen_genre_id = st.session_state.get("chosen_genre")
+        chosen_genre_name = reverse_genre_map.get(chosen_genre_id, "Unknown")
 
         st.info(
             f"""
- **Criteria selected**  
-• Similarity level: **{st.session_state.similarity}**  
+🎛️ **Criteria selected**  
+• Similarity level: **{similarity_value}**  
 • Genre: **{chosen_genre_name}**  
 • Desired playlist length: **{st.session_state.n_desired_songs} songs**
 """
@@ -213,7 +217,7 @@ if st.session_state.step >= 2:
 
 
 # -------------------------
-# STEP 3 — Quick Evaluation
+# STEP 2 — Quick Evaluation
 # -------------------------
 if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
     st.header("Step 2 – Quick song evaluation")
@@ -396,7 +400,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
           # -------------------------
             # END MACHINE LEARNING
             # -------------------------
-            # STEP 4 — Final Playlist
+            # STEP 3 — Final Playlist
             # -------------------------
 if st.session_state.step >= 4 and st.session_state.evaluation_done:
     st.header("Step 3 – Your final recommended playlist")
