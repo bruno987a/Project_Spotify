@@ -419,5 +419,11 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
         # Rerun to reinitialize everything
         st.rerun()  # use st.experimental_rerun() if your Streamlit version is older
 
+st.markdown(
+    "<div style='text-align: center; color: #888; padding: 20px;'>"
+    "© 2025 Cookable"
+    "</div>",
+    unsafe_allow_html=True
+)
 
 
