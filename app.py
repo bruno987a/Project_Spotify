@@ -42,15 +42,8 @@ for i, name in enumerate(steps, start=1):
     else:
         st.sidebar.markdown(f"⬜ Step {i}: {name}")
 
-c1, c2 = st.columns([3, 1])
-with c1:
-    st.markdown("## 🎧 Smart Playlist Generator")
-    st.markdown(
-        "Create a **group playlist** based on your ratings.\n"
-        "Invite friends, rate a few tracks, and let the model do the rest."
-    )
-with c2:
-    st.metric("Raters", st.session_state.num_raters)
+st.title("Smart Playlist Generator")
+st.markdown("Create personalized playlists based on your musical preferences and feedback.")
 
 # Initialize session state for progress tracking
 # Initialize session state
