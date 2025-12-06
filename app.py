@@ -101,8 +101,8 @@ render_sidebar()
 if st.session_state.step >= 1:
     st.header("Step 0 – Group setup")
 
-    # BEFORE criteria are confirmed → show full editable form
-    if not st.session_state.criteria_confirmed:
+    # BEFORE "Confirm group" is clicked → show editable inputs
+    if st.session_state.step == 1:
         num = st.number_input(
             "How many people are going to rate?",
             min_value=1,
@@ -133,12 +133,11 @@ if st.session_state.step >= 1:
             st.session_state.ratings = {name: {} for name in clean_names}
 
             st.session_state.active_rater_idx = 0
-            st.session_state.step = 2
+            st.session_state.step = 2  # GO TO STEP 1
 
-            # rerun so the page updates immediately
             st.rerun()
 
-    # AFTER criteria are confirmed → show a fixed summary instead of hiding Step 0
+    # AFTER confirm group → show summary permanently
     else:
         st.info(
             "👥 **Group:** "
