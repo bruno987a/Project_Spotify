@@ -356,7 +356,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
             st.session_state.final_success_message = True
 
             # 🔹 force rerun so sidebar + final playlist update immediately
-            st.experimental_rerun() 
+            st.rerun() 
 
           # -------------------------
             # END MACHINE LEARNING
