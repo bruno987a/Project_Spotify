@@ -195,15 +195,42 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
 
     st.markdown("### 🎵 Rate these songs")
 
+
+
+    # Header row (Songs / Rating)
+    header_song_col, header_rating_col = st.columns([3, 2])
+    with header_song_col:
+        st.markdown(
+            "<div style='background-color:#f0f2f6; padding:0.5rem; "
+            "border-radius:0.5rem 0 0 0.5rem; font-weight:600;'>Songs</div>",
+            unsafe_allow_html=True,
+        )
+    with header_rating_col:
+        st.markdown(
+            "<div style='background-color:#f0f2f6; padding:0.5rem; "
+            "border-radius:0 0.5rem 0.5rem 0; font-weight:600;'>"
+            "Rating<br><span style='font-weight:400; font-size:0.8rem;'>"
+            "1 = dislike · 5 = love</span></div>",
+            unsafe_allow_html=True,
+        )
+
+    # Data rows
     for i, row in songs_df.iterrows():
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        c1, c2 = st.columns([6, 4])
+        song_col, rating_col = st.columns([3, 2])
 
-        with c1:
-            st.markdown(f"<div class='card-header'>{row['title']}</div>", unsafe_allow_html=True)
-            st.markdown(f"*{row['artist']}*", unsafe_allow_html=False)
+        with song_col:
+            st.markdown(
+                f"""
+                <div style='background-color:#fafafa; padding:0.5rem; 
+                            border-bottom:1px solid #e0e0e0;'>
+                    <strong>{row['title']}</strong><br>
+                    <span style='font-size:0.85rem; color:#555;'>{row['artist']}</span>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
-        with c2:
+        with rating_col:
             rating = st.slider(
                 label=f"Rating for {row['title']}",
                 min_value=1,
@@ -212,13 +239,10 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                 key=f"rating_{current_user}_{i}",
                 step=1,
             )
-            st.caption("1 = dislike · 5 = love")
 
-        st.markdown('</div>', unsafe_allow_html=True)
-
-
-        # save per-user (and ONLY per-user)
+        # Save per-user rating
         user_ratings[row["track_id"]] = rating
+
 
     # Buttons to go to next person
     if idx_rater < len(rater_names) - 1:
