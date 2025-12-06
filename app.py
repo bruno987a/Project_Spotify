@@ -234,12 +234,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                 return np.average(vecs, axis=0, weights=ratings)
             
             def weight_adjustment(points: int) -> float:                                                        # Transform ratings of 1 & 2 into negative weights for the vector, and ratings of 3 to neutral
-                if points <= 2:
-                    return points - 3
-                if points == 3:
-                    return 0.0
-                else:
-                    return points - 3
+                return (points / 3.0) ** 2
 
             user_profiles = []
             for username, rating_dict in st.session_state.ratings.items():
