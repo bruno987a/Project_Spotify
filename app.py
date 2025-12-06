@@ -162,8 +162,9 @@ if st.session_state.step >= 2:
         st.session_state.evaluation_done = False
         st.session_state.active_rater_idx = 0
         if "candidate_songs" in st.session_state:
-            del st.session_state.candidate_songs  # force same set to be regenerated for this run
-        st.success("Preferences saved. Proceed to Quick Evaluation.")
+            del st.session_state.candidate_songs
+
+        st.rerun()
 
 
 # -------------------------
