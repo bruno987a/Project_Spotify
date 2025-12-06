@@ -287,9 +287,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
     else:
         # allow generation for last rater
         if st.button("Generate Final Playlist"):
-            st.session_state.evaluation_done = True
-            st.session_state.step = 4
-            st.success("All ratings collected! Proceed to Final Playlist.")
+
             
 
             # ------------------------------
@@ -351,7 +349,14 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
 
             # store for step 4
             st.session_state.recommended_ids = recommended_ids
-   
+            st.session_state.evaluation_done = True
+            st.session_state.step = 4
+
+            # 🔹 tell next run to show success message on the final page
+            st.session_state.final_success_message = True
+
+            # 🔹 force rerun so sidebar + final playlist update immediately
+            st.experimental_rerun() 
 
           # -------------------------
             # END MACHINE LEARNING
