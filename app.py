@@ -27,6 +27,21 @@ DB = get_conn()
 # -------------------------
 st.set_page_config(page_title="Smart Playlist Generator", page_icon="🎧", layout="wide")
 
+st.sidebar.title("🎧 Smart Playlist Generator")
+st.sidebar.caption("Group-based, ML-powered recommendations")
+
+# Simple step indicator
+steps = ["Group setup", "Criteria", "Quick evaluation", "Final playlist"]
+current_step = st.session_state.get("step", 1)
+
+for i, name in enumerate(steps, start=1):
+    if current_step == i:
+        st.sidebar.markdown(f"**➡️ Step {i}: {name}**")
+    elif current_step > i:
+        st.sidebar.markdown(f"✅ Step {i}: {name}")
+    else:
+        st.sidebar.markdown(f"⬜ Step {i}: {name}")
+        
 st.title("Smart Playlist Generator")
 st.markdown("Create personalized playlists based on your musical preferences and feedback.")
 
