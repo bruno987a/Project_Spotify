@@ -140,7 +140,7 @@ if st.session_state.step >= 1:
     # AFTER confirm group → show summary permanently
     else:
         st.info(
-            "👥 **Group:** "
+            " **Group:** "
             + ", ".join(st.session_state.rater_names)
             + f"  —  Total raters: {st.session_state.num_raters}"
         )
@@ -204,7 +204,7 @@ if st.session_state.step >= 2:
 
         st.info(
             f"""
-🎛️ **Criteria selected**  
+ **Criteria selected**  
 • Similarity level: **{st.session_state.similarity}**  
 • Genre: **{chosen_genre_name}**  
 • Desired playlist length: **{st.session_state.n_desired_songs} songs**
