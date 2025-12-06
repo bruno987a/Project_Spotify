@@ -227,7 +227,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
     current_user = rater_names[idx_rater]
 
     st.write(f"Rater **{idx_rater + 1} / {len(rater_names)}**: **{current_user}**")
-    st.write("Please rate the following songs:")
+    st.write("### Please rate the following songs:")
 
     # make sure this user's dict exists
     st.session_state.ratings.setdefault(current_user, {})
@@ -263,7 +263,6 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
 
     songs_df = st.session_state.candidate_songs
 
-    st.markdown("### 🎵 Rate these songs")
 
 # Header row (Songs / Rating)
     header_song_col, header_rating_col = st.columns([3, 2])
