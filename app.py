@@ -232,6 +232,14 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                 ratings = np.asarray(ratings_list, dtype=float)
                 vecs = features_df.loc[rated_ids].values
                 return np.average(vecs, axis=0, weights=ratings)
+            
+            def weight_adjustment(points: int) -> float:                                                        # Transform ratings of 1 & 2 into negative weights for the vector, and ratings of 3 to neutral
+                if points <= 2:
+                    return points - 3
+                if points == 3:
+                    return 0.0
+                else:
+                    return points - 3
 
             user_profiles = []
             for username, rating_dict in st.session_state.ratings.items():
@@ -242,7 +250,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                 if not rated_ids:
                     continue
 
-                ratings_list = [rating_dict[tid] for tid in rated_ids]
+                ratings_list = [weight_adjustment(rating_dict[tid]) for tid in rated_ids]
                 user_profiles.append(build_user_profile(ratings_list, rated_ids, features_14_scaled))
 
             if len(user_profiles) == 0:
