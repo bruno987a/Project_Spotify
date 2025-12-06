@@ -43,7 +43,41 @@ for i, name in enumerate(steps, start=1):
         st.sidebar.markdown(f"⬜ Step {i}: {name}")
 
 st.title("Smart Playlist Generator")
-st.markdown("Create personalized playlists based on your musical preferences and feedback.")
+st.markdown(
+    """
+    <style>
+    /* Reduce padding at the top */
+    .block-container {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+    }
+
+    /* Card-like containers */
+    .card {
+        padding: 1rem 1.2rem;
+        border-radius: 0.75rem;
+        border: 1px solid #e0e0e0;
+        background-color: #fafafa;
+        margin-bottom: 0.75rem;
+    }
+
+    .card-header {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+    .badge {
+        display: inline-block;
+        padding: 0.15rem 0.45rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        background-color: #1DB95422;
+        color: #1DB954;
+        margin-left: 0.5rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Initialize session state for progress tracking
 # Initialize session state
