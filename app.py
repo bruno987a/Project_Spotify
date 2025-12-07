@@ -3,6 +3,8 @@ import sqlite3
 import pandas as pd
 import numpy as np
 import random
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 from pathlib import Path
 from sklearn.neighbors import NearestNeighbors  # Machine Learning algorithm @Lorenz
 from sklearn.preprocessing import StandardScaler
@@ -672,6 +674,70 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
             df_final_display,
             use_container_width=True
         )
+            # ---------------------------------------------
+    # Visualization: Feature similarity of recommended tracks (PCA 2D plot)
+    # ---------------------------------------------
+    st.markdown("#### Feature similarity of your recommended songs")
+
+    # Load and prepare feature data (same file as in the ML part)
+    features = pd.read_csv(DATA_DIR / "reduced_features.csv", index_col=0)
+
+    feature_cols = [
+        "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
+        "mfcc_06_mean", "mfcc_07_mean", "mfcc_08_mean", "mfcc_09_mean", "mfcc_10_mean",
+        "rmse_01_mean",
+        "spectral_centroid_01_mean",
+        "spectral_bandwidth_01_mean",
+        "chroma_var",
+    ]
+    features_14 = features[feature_cols].copy()
+
+    # Scale features (same preprocessing as in the recommender)
+    scaler = StandardScaler()
+    X_14 = scaler.fit_transform(features_14)
+    features_14_scaled = pd.DataFrame(X_14, index=features.index, columns=feature_cols)
+
+    # Keep only tracks that have feature vectors
+    rec_ids = [tid for tid in st.session_state.recommended_ids if tid in features_14_scaled.index]
+
+    if len(rec_ids) >= 2:
+        # Run PCA on ALL tracks to get global space
+        pca = PCA(n_components=2)
+        X_2d = pca.fit_transform(features_14_scaled.values)
+        coords = pd.DataFrame(X_2d, index=features_14_scaled.index, columns=["PC1", "PC2"])
+
+        # Mark recommended vs others
+        coords["is_recommended"] = coords.index.isin(rec_ids)
+
+        # Build the plot
+        fig, ax = plt.subplots()
+
+        # Background: all other tracks (light / transparent)
+        others = coords[~coords["is_recommended"]]
+        ax.scatter(
+            others["PC1"],
+            others["PC2"],
+            alpha=0.08,
+            s=10,
+        )
+
+        # Highlight: recommended tracks (solid points)
+        rec = coords[coords["is_recommended"]]
+        ax.scatter(
+            rec["PC1"],
+            rec["PC2"],
+            alpha=0.9,
+            s=40,
+        )
+
+        ax.set_xlabel("Principal Component 1")
+        ax.set_ylabel("Principal Component 2")
+        ax.set_title("Feature similarity of recommended tracks (PCA)")
+
+        st.pyplot(fig)
+    else:
+        st.info("Not enough recommended songs to show a feature-space visualization.")
+
 
         st.markdown("**Summary:**")
         st.write(f"- Total songs: {len(df_final)}")
