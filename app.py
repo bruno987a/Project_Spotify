@@ -93,19 +93,6 @@ st.markdown(
         border: 1px solid #d1d5db !important;
         font-size: 1rem !important;
     }
-    /* Make the "Generate final playlist" button red */
-    div.stButton > button[kind="primary"] {
-        background-color: #dc2626 !important;   /* red */
-        border: 1px solid #b91c1c !important;   /* darker red border */
-        color: white !important;                /* white text */
-    }
-
-    /* Hover effect */
-    div.stButton > button[kind="primary"]:hover {
-        background-color: #b91c1c !important;   /* darker red */
-        border-color: #7f1d1d !important;
-    }
-
 
     /* Make most labels and normal text a bit larger */
     label, .stMarkdown p, .stMarkdown li, .stCheckbox, .stRadio, .stSlider label {
@@ -548,7 +535,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
             col_left, col_center, col_right = st.columns([1, 2, 1])
             with col_center:
                 # allow generation for last rater
-                if st.button("🎉 Generate final playlist", use_container_width=True):
+                if st.button("🎉 Generate final playlist", type="primary", use_container_width=True):
 
                     # ------------------------------
                     # START MACHINE LEARNING PART (comme ton Code 2)
