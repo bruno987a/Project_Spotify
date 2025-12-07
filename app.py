@@ -630,8 +630,13 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
         })
 
         df_final = s_t[s_t["track_id"].isin(st.session_state.recommended_ids)][["title", "artist"]]
-        st.dataframe(df_final, use_container_width=True)
+        df_final_display = df_final.reset_index(drop=True)
+        df_final_display.index = df_final_display.index + 1
 
+        st.dataframe(
+            df_final_display,
+            use_container_width=True
+        )
 
         st.markdown("**Summary:**")
         st.write(f"- Total songs: {len(df_final)}")
