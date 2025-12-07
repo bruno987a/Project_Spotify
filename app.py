@@ -248,7 +248,7 @@ st.markdown(
 )
 st.markdown(
     '<div class="main-subtitle">'
-    "Create group playlists that balance everyone’s taste.."
+    "Create group playlists that balance everyone’s taste."
     "</div>",
     unsafe_allow_html=True,
 )
