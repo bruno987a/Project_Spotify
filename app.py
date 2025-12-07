@@ -311,8 +311,12 @@ if st.session_state.step >= 1:
 # -------------------------
 # STEP 1 — Generation Criteria (en card)
 # -------------------------
+# -------------------------
+# STEP 1 — Playlist generation criteria (DESIGN LIKE CODE 1)
+# -------------------------
 if st.session_state.step >= 2:
     with st.container():
+        # Required to trigger card CSS
         st.markdown('<div class="step-card"></div>', unsafe_allow_html=True)
 
         st.markdown("### Playlist generation criteria")
@@ -320,31 +324,40 @@ if st.session_state.step >= 2:
 
         # BEFORE confirming → show full criteria form
         if st.session_state.step == 2:
-            similarity = st.selectbox(
-                "Similarity level",
-                ["None", "Genre", "Artist", "Mixed"],
-                index=0,  # default selection is "None"
-                format_func=lambda x: f"*{x}*" if x == "None" else x,
-                key="similarity"
-            )
 
-            # Song selection for rating 
-            genre_map = {
-                "Rock/Metal/Punk": 1, "Pop/Synth": 2, "Electronic/IDM": 3,
-                "Hip-Hop/RnB": 4, "Jazz/Blues": 5, "Classical": 6,
-                "Folk/Country/Americana": 7, "World/Reggae/Latin": 8,
-                "Experimental/Sound Art": 9, "Spoken/Soundtrack/Misc": 10,
-                "Funk": 11
-            }
+            col1, col2 = st.columns(2)
 
-            key_genre = st.selectbox("Preferred genre", list(genre_map.keys()))
+            with col1:
+                similarity = st.selectbox(
+                    "Similarity level",
+                    ["None", "Genre", "Artist", "Mixed"],
+                    index=0,  # default selection
+                    format_func=lambda x: f"*{x}*" if x == "None" else x,
+                    key="similarity"
+                )
+
+            with col2:
+                genre_map = {
+                    "Rock/Metal/Punk": 1, "Pop/Synth": 2, "Electronic/IDM": 3,
+                    "Hip-Hop/RnB": 4, "Jazz/Blues": 5, "Classical": 6,
+                    "Folk/Country/Americana": 7, "World/Reggae/Latin": 8,
+                    "Experimental/Sound Art": 9, "Spoken/Soundtrack/Misc": 10,
+                    "Funk": 11
+                }
+
+                key_genre = st.selectbox(
+                    "Preferred genre",
+                    list(genre_map.keys()),
+                )
+
+            # Playlist length – full width, same as Code 1
             st.session_state.chosen_genre = genre_map[key_genre]
             st.session_state.n_desired_songs = st.slider(
                 "Playlist length (number of songs)",
-                5, 30, 15
+                5, 30, 15,
             )
 
-            # button for continuing the workflow and start the rating process    
+            # Confirm button aligned like Code 1
             if st.button("✅ Confirm criteria & start rating", use_container_width=True):
                 st.session_state.criteria_confirmed = True
                 st.session_state.step = 3
@@ -355,7 +368,7 @@ if st.session_state.step >= 2:
 
                 st.rerun()
 
-        # AFTER confirming → show criteria summary
+        # AFTER confirming → summary card like Code 1
         else:
             reverse_genre_map = {
                 1: "Rock/Metal/Punk", 2: "Pop/Synth", 3: "Electronic/IDM",
@@ -365,7 +378,6 @@ if st.session_state.step >= 2:
                 11: "Funk"
             }
 
-            # SAFE access with defaults
             similarity_value = st.session_state.get("similarity", "None")
             chosen_genre_id = st.session_state.get("chosen_genre")
             chosen_genre_name = reverse_genre_map.get(chosen_genre_id, "Unknown")
@@ -378,6 +390,7 @@ if st.session_state.step >= 2:
 • Desired playlist length: **{st.session_state.n_desired_songs} songs**
 """
             )
+
 
 
 # -------------------------
