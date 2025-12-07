@@ -153,6 +153,11 @@ st.markdown(
         width: 270px !important;
         min-width: 270px !important;
     }
+    /* Make selectbox placeholder text white */
+    div[data-testid="stSelectbox"] span[data-baseweb="select"] {
+        color: #ffffff !important;     
+        opacity: 1 !important;         
+    }
     </style>
     """,
     unsafe_allow_html=True,
