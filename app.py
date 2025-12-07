@@ -286,11 +286,9 @@ if st.session_state.step >= 1:
 
         # AFTER confirm group → show summary 
         else:
-            st.info(
-                " **Group:** "
-                + ", ".join(st.session_state.rater_names)
-                + f"  —  Total raters: {st.session_state.num_raters}"
-            )
+            total = st.session_state.num_raters
+            names_display = ", ".join(st.session_state.rater_names)
+            st.info(f"**Total raters:** {total} – {names_display}")
 
 
 # -------------------------
