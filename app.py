@@ -233,7 +233,7 @@ st.markdown(
 )
 st.markdown(
     '<div class="main-subtitle">'
-    "Create personalized playlists based on your musical preferences and feedback."
+    "Create group playlists that balance everyone’s taste.."
     "</div>",
     unsafe_allow_html=True,
 )
