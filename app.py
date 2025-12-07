@@ -326,9 +326,9 @@ if st.session_state.step >= 2:
             with col1:
                 similarity_raw = st.selectbox(
                     "Similarity level",
-                    ["None", "Genre", "Artist", "Mixed"],
-                    index=None,                     # ← pas de sélection par défaut
-                    placeholder="Choose an option", # ← texte grisé
+                    ["Genre", "Artist", "Mixed"],
+                    index=None,                     
+                    placeholder="Choose an option", 
                     key="similarity_raw",
                 )
 
@@ -344,8 +344,8 @@ if st.session_state.step >= 2:
                 genre_raw = st.selectbox(
                     "Preferred genre",
                     list(genre_map.keys()),
-                    index=None,                     # ← pas de sélection par défaut
-                    placeholder="Choose an option", # ← texte grisé
+                    index=None,                     
+                    placeholder="Choose an option", 
                     key="genre_raw",
                 )
 
