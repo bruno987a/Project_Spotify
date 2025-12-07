@@ -405,7 +405,7 @@ if st.session_state.step >= 2:
 
             st.info(
                 f"""
-🎛️ **Criteria selected**  
+**Criteria selected:**  
 • Similarity level: **{similarity_value}**  
 • Genre: **{chosen_genre_name}**  
 • Desired playlist length: **{st.session_state.n_desired_songs} songs**
@@ -538,7 +538,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                 if st.button("🎉 Generate final playlist", type="primary", use_container_width=True):
 
                     # ------------------------------
-                    # START MACHINE LEARNING PART (comme ton Code 2)
+                    # START MACHINE LEARNING PART 
                     # ------------------------------
                     features = pd.read_csv(DATA_DIR / "reduced_features.csv", index_col=0)
 
@@ -630,7 +630,8 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
         })
 
         df_final = s_t[s_t["track_id"].isin(st.session_state.recommended_ids)][["title", "artist"]]
-        st.dataframe(df_final.reset_index(drop=True), use_container_width=True)
+        st.dataframe(df_final, use_container_width=True)
+
 
         st.markdown("**Summary:**")
         st.write(f"- Total songs: {len(df_final)}")
@@ -643,7 +644,7 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
             # Rerun to reinitialize everything
             st.rerun()
 
-# Footer avec style Code 1
+
 st.markdown(
     '<div class="footer">© Smart Playlist</div>',
     unsafe_allow_html=True
