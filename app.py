@@ -195,7 +195,7 @@ st.markdown(
 # Sidebar: progress indicator
 # -------------------------
 def render_sidebar():
-    st.sidebar.title("🎧 Smart Playlist")
+    st.sidebar.title("Progress")
 
     # Define when each step is considered "done"
     step0_done = st.session_state.step > 1                      # Confirmed group
@@ -214,13 +214,18 @@ def render_sidebar():
 
     for idx, (label, done) in enumerate(steps, start=1):
         if done:
-            st.sidebar.markdown(f"✅ {label}")
+            css = "step-label step-done"
+            icon = "✅"
         elif idx == current_step:
-            st.sidebar.markdown(f"▶️ {label}")
+            css = "step-label step-current"
+            icon = "▶️"
         else:
-            st.sidebar.markdown(f"▫️ {label}")
+            css = "step-label step-todo"
+            icon = "▫️"
 
-render_sidebar()
+        st.sidebar.markdown(
+            f"<div class='{css}'>{icon} {label}</div>", unsafe_allow_html=True
+        )
 
 
 # -------------------------
