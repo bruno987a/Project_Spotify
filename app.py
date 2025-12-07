@@ -161,6 +161,16 @@ st.markdown(
         width: 270px !important;
         min-width: 270px !important;
     }
+    /* Force selectbox (dropdown) background to white */
+    div[data-testid="stSelectbox"] div[data-baseweb="select"],
+    div[data-testid="stSelectbox"] div[data-baseweb="select"] > div,
+    div[data-testid="stSelectbox"] div[role="combobox"] {
+        background-color: #ffffff !important;
+        border-radius: 0.6rem !important;
+        border: 1px solid #d1d5db !important;
+        box-shadow: none !important;
+    }
+
     /
     </style>
     """,
