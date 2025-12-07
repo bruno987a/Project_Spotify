@@ -153,11 +153,7 @@ st.markdown(
         width: 270px !important;
         min-width: 270px !important;
     }
-    /* Make selectbox placeholder text white */
-    div[data-testid="stSelectbox"] span[data-baseweb="select"] {
-        color: #ffffff !important;     
-        opacity: 1 !important;         
-    }
+    /
     </style>
     """,
     unsafe_allow_html=True,
@@ -248,9 +244,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# -------------------------
-# ---------Group Setup (Step 0) dans une card
-# -------------------------
+
 # --------- Setup (Step 0) ----------
 if st.session_state.step >= 1:
     with st.container():
@@ -314,7 +308,7 @@ if st.session_state.step >= 1:
 
 
 # -------------------------
-# STEP 1 — Playlist generation criteria (avec placeholder + popup)
+# STEP 1 — Playlist generation criteria 
 # -------------------------
 if st.session_state.step >= 2:
     with st.container():
@@ -374,7 +368,8 @@ if st.session_state.step >= 2:
                             border: 1px solid #b91c1c;
                             border-radius: 0.6rem;
                             font-weight: 500;
-                            margin-top: 0.5rem;">
+                            margin-top: 0.5rem;
+                            text-align: center;">
                             Please choose both a similarity level and a preferred genre before continuing.
                         </div>
                         """,
