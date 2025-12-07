@@ -150,8 +150,8 @@ st.markdown(
     }
     /* Make sidebar wider */
     section[data-testid="stSidebar"] {
-        width: 300px !important;
-        min-width: 300px !important;
+        width: 270px !important;
+        min-width: 270px !important;
     }
     </style>
     """,
