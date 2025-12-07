@@ -31,10 +31,6 @@ st.set_page_config(
 # Streamlit app setup
 # -------------------------
 
-
-st.title("Smart Playlist Generator")
-st.markdown("Create personalized playlists based on your musical preferences and feedback.")
-
 # Initialize session state for progress tracking
 # Initialize session state
 if "step" not in st.session_state:
