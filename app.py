@@ -163,7 +163,26 @@ st.markdown(
         border: 1px solid #d1d5db !important;
         box-shadow: none !important;
     }
+    /* Make all Streamlit tables smaller */
+    div[data-testid="stDataFrame"] table {
+        font-size: 0.75rem !important;   /* smaller text */
+    }
 
+    div[data-testid="stDataFrame"] td,
+    div[data-testid="stDataFrame"] th {
+        padding: 2px 6px !important;     /* smaller cell padding */
+        line-height: 1.1 !important;     /* reduce row height */
+    }
+
+    div[data-testid="stDataFrame"] thead th {
+        font-size: 0.8rem !important;    /* smaller header text */
+        font-weight: 600 !important;
+    }
+
+/* Reduce DataFrame container space */
+    div[data-testid="stDataFrame"] {
+        height: 180px !important;        /* sets actual displayed table height */
+    }
     /
     </style>
     """,
@@ -640,7 +659,10 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
         df_final_display = df_final.reset_index(drop=True)
         df_final_display.index = df_final_display.index + 1
 
-        st.dataframe(df_final, use_container_width=True, height=200)
+        st.dataframe(
+            df_final_display,
+            use_container_width=True
+        )
             # ---------------------------------------------
     # Simple visualization: distribution of ratings
     # ---------------------------------------------
