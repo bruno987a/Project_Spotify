@@ -646,11 +646,21 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
             use_container_width=True
         )
             # ---------------------------------------------
-    # Visualization: Feature similarity of recommended tracks (PCA 2D plot)
+    # Optional: PCA visualization in a dropdown
     # ---------------------------------------------
-        st.markdown("#### Feature similarity of your recommended songs")
+    st.markdown(
+        "You can also inspect how your recommended songs are positioned "
+        "in the overall audio feature space (optional):"
+    )
 
-    # Load and prepare feature data (same file as in the ML part)
+    with st.expander("🔍 Show feature similarity of recommended songs (PCA)"):
+        st.write(
+            "This plot shows your recommended songs in a 2D space derived from 14 audio features "
+            "(MFCCs, loudness, spectral features, etc.). "
+            "Points that are closer together correspond to songs that are more similar in their audio characteristics."
+        )
+
+        # Load and prepare feature data (same file as in the ML part)
         features = pd.read_csv(DATA_DIR / "reduced_features.csv", index_col=0)
 
         feature_cols = [
@@ -663,27 +673,34 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
         ]
         features_14 = features[feature_cols].copy()
 
-    # Scale features (same preprocessing as in the recommender)
+        # Scale features (same preprocessing as in the recommender)
         scaler = StandardScaler()
         X_14 = scaler.fit_transform(features_14)
         features_14_scaled = pd.DataFrame(X_14, index=features.index, columns=feature_cols)
 
-    # Keep only tracks that have feature vectors
-        rec_ids = [tid for tid in st.session_state.recommended_ids if tid in features_14_scaled.index]
+        # Keep only tracks that have feature vectors
+        rec_ids = [
+            tid for tid in st.session_state.recommended_ids
+            if tid in features_14_scaled.index
+        ]
 
         if len(rec_ids) >= 2:
-        # Run PCA on ALL tracks to get global space
+            # Run PCA on ALL tracks to get global space
             pca = PCA(n_components=2)
             X_2d = pca.fit_transform(features_14_scaled.values)
-            coords = pd.DataFrame(X_2d, index=features_14_scaled.index, columns=["PC1", "PC2"])
+            coords = pd.DataFrame(
+                X_2d,
+                index=features_14_scaled.index,
+                columns=["PC1", "PC2"]
+            )
 
-        # Mark recommended vs others
+            # Mark recommended vs others
             coords["is_recommended"] = coords.index.isin(rec_ids)
 
-        # Build the plot
-            fig, ax = plt.subplots()
+            # Build a smaller plot
+            fig, ax = plt.subplots(figsize=(5, 3))  # <-- smaller figure
 
-        # Background: all other tracks (light / transparent)
+            # Background: all other tracks (light / transparent)
             others = coords[~coords["is_recommended"]]
             ax.scatter(
                 others["PC1"],
@@ -692,7 +709,7 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
                 s=10,
             )
 
-        # Highlight: recommended tracks
+            # Highlight: recommended tracks
             rec = coords[coords["is_recommended"]]
             ax.scatter(
                 rec["PC1"],
@@ -703,15 +720,19 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
 
             ax.set_xlabel("Principal Component 1")
             ax.set_ylabel("Principal Component 2")
-            ax.set_title("Feature similarity of recommended tracks (PCA projection)")
+            ax.set_title("PCA projection of audio feature space")
 
             st.pyplot(fig)
+
+            st.caption(
+                "Red points are your recommended songs. Songs that are close together in this plot "
+                "have similar audio features (timbre, loudness, spectral shape, etc.)."
+            )
         else:
-            st.info("Not enough recommended songs to show a feature-space visualization.")
-
-
-        st.markdown("**Summary:**")
-        st.write(f"- Total songs: {len(df_final)}")
+            st.info(
+                "Not enough recommended songs to show the PCA similarity plot."
+            )
+    
 
         if st.button("🔁 Start over", use_container_width=True):
             # Completely clear session state
