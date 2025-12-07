@@ -148,6 +148,11 @@ st.markdown(
         padding: 20px 0 5px 0;
         font-size: 0.9rem;
     }
+    /* Make sidebar wider */
+    section[data-testid="stSidebar"] {
+        width: 340px !important;
+        min-width: 340px !important;
+    }
     </style>
     """,
     unsafe_allow_html=True,
