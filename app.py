@@ -20,12 +20,17 @@ def get_conn():
 
 DB = get_conn()
 
-
+st.set_page_config(
+    page_title="Smart Playlist Generator",
+    page_icon="🎧",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
 # -------------------------
 # Streamlit app setup
 # -------------------------
-st.set_page_config(page_title="Smart Playlist Generator", page_icon="🎧", layout="wide")
+
 
 st.title("Smart Playlist Generator")
 st.markdown("Create personalized playlists based on your musical preferences and feedback.")
@@ -62,6 +67,129 @@ if "chosen_genre" not in st.session_state:
 
 if "n_desired_songs" not in st.session_state:
     st.session_state.n_desired_songs = 15
+
+# =========================================================
+# Global Styles
+# =========================================================
+st.markdown(
+    """
+    <style>
+    /* Make global text bigger */
+    html, body, .stApp {
+        font-size: 18px;  /* base size up from default */
+    }
+
+    /* Overall background – white */
+    .stApp {
+        background: #ffffff;
+    }
+
+    .main-title {
+        font-size: 3rem;          /* bigger main title */
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.35rem;
+    }
+
+    .main-subtitle {
+        font-size: 1.1rem;        /* bigger subtitle */
+        color: #666;
+        margin-bottom: 1.2rem;
+    }
+
+    /* Cards for each step – tighter padding so content starts closer to the edge */
+    .block-container div[data-testid="stVerticalBlock"] div[data-testid="stVerticalBlock"]:has(.step-card) {
+        background: radial-gradient(circle at top left, #fdfbfb 0, #ebedee 40%, #f7f7f7 100%);
+        border-radius: 1.1rem;
+        padding: 0.8rem 1rem;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        margin-bottom: 1rem;
+    }
+
+    /* Invisible marker for step cards */
+    .step-card {
+        height: 0;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* WHITE input backgrounds (number, text, select) */
+    div[data-testid="stNumberInput"] input,
+    div[data-testid="stTextInput"] input,
+    div[data-testid="stSelectbox"] div[role="combobox"] {
+        background-color: #ffffff !important;
+        border-radius: 0.6rem !important;
+        border: 1px solid #d1d5db !important;
+        font-size: 1rem !important;  /* make input text bigger */
+    }
+
+    /* WHITE + / - buttons on number input */
+    div[data-testid="stNumberInput"] button {
+        background-color: #ffffff !important;
+        border-radius: 0.6rem !important;
+        border: 1px solid #d1d5db !important;
+        font-size: 1rem !important;
+    }
+
+    /* Make most labels and normal text a bit larger */
+    label, .stMarkdown p, .stMarkdown li, .stCheckbox, .stRadio, .stSlider label {
+        font-size: 1rem !important;
+    }
+
+    /* Sidebar steps */
+    .step-label {
+        padding: 0.35rem 0.5rem;
+        border-radius: 0.8rem;
+        font-size: 0.95rem;
+        margin-bottom: 0.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+    }
+    .step-done {
+        background: rgba(34, 197, 94, 0.12);
+        color: #166534;
+    }
+    .step-current {
+        background: rgba(59, 130, 246, 0.12);
+        color: #1d4ed8;
+    }
+    .step-todo {
+        background: rgba(148, 163, 184, 0.12);
+        color: #475569;
+    }
+
+    /* Song list rows */
+    .song-row {
+        background: #fafafa;
+        padding: 0.6rem 0.8rem;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .song-title {
+        font-weight: 600;
+        font-size: 1rem;
+        color: #111827;
+    }
+    .song-artist {
+        font-size: 0.9rem;
+        color: #6b7280;
+    }
+
+    /* Footer */
+    .footer {
+        text-align: center;
+        color: #9ca3af;
+        padding: 20px 0 5px 0;
+        font-size: 0.9rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 # -------------------------
 # Sidebar: progress indicator
