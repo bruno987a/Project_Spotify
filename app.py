@@ -197,14 +197,13 @@ st.markdown(
 def render_sidebar():
     st.sidebar.title("Progress")
 
-    # Define when each step is considered "done"
-    step0_done = st.session_state.step > 1                      # Confirmed group
-    step1_done = st.session_state.criteria_confirmed            # Confirmed criteria
-    step2_done = st.session_state.evaluation_done               # Pressed "Generate Final Playlist"
-    step3_done = st.session_state.step >= 4                     # At final playlist
+    step0_done = st.session_state.step > 1
+    step1_done = st.session_state.criteria_confirmed
+    step2_done = st.session_state.evaluation_done
+    step3_done = st.session_state.step >= 4
 
     steps = [
-        ("Step 0 – Group setup", step0_done),
+        ("Step 0 – Setup", step0_done),
         ("Step 1 – Criteria", step1_done),
         ("Step 2 – Quick evaluation", step2_done),
         ("Step 3 – Final playlist", step3_done),
