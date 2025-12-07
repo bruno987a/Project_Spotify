@@ -613,7 +613,13 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
         st.markdown('<div class="step-card"></div>', unsafe_allow_html=True)
 
         st.markdown("### Final recommended playlist")
-        st.write("Generated based on your preferences and evaluations:")
+        if st.session_state.final_success_message:
+            if st.session_state.num_raters > 1:
+                msg = "✅ Playlist generated based on the whole group’s preferences!"
+            else:
+                msg = "✅ Playlist generated based on your preferences!"
+            st.success(msg)
+            st.session_state.final_success_message = False
 
         # s_t vient de plus haut (dans step 2), on le recharge au cas où
         t = pd.read_sql_query("SELECT * FROM tracks_small", DB)
