@@ -79,7 +79,7 @@ st.markdown(
     /* WHITE input backgrounds (number, text, select) */
     div[data-testid="stNumberInput"] input,
     div[data-testid="stTextInput"] input,
-    div[data-testid="stSelectbox"] div[data-baseweb="select"] {
+    div[data-testid="stSelectbox"] div[role="combobox"]{
         background-color: #ffffff !important;
         border-radius: 0.6rem !important;
         border: 1px solid #d1d5db !important;
