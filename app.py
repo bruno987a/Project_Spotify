@@ -76,15 +76,23 @@ st.markdown(
         padding: 0;
     }
 
-    /* WHITE input backgrounds (number, text, select) */
+    /* WHITE input backgrounds (number, text) */
     div[data-testid="stNumberInput"] input,
-    div[data-testid="stTextInput"] input,
-    div[data-testid="stSelectbox"] div[role="combobox"]{
+    div[data-testid="stTextInput"] input {
         background-color: #ffffff !important;
         border-radius: 0.6rem !important;
         border: 1px solid #d1d5db !important;
-        font-size: 1rem !important;  /* make input text bigger */
+        font-size: 1rem !important;
     }
+
+/* WHITE selectbox background */
+    div[data-testid="stSelectbox"] div[data-baseweb="select"] {
+        background-color: #ffffff !important;      /* <- the main pill */
+        border-radius: 0.6rem !important;
+        border: 1px solid #d1d5db !important;
+        font-size: 1rem !important;
+    }
+
 
     /* WHITE + / - buttons on number input */
     div[data-testid="stNumberInput"] button {
