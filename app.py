@@ -534,6 +534,45 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                 # allow generation for last rater
                 if st.button("🎉 Generate final playlist", type="primary", use_container_width=True):
 
+                    # 1) Gruppenzufriedenheit prüfen
+                    rater_names = st.session_state.rater_names
+                    num_raters = len(rater_names)
+
+                    unhappy_count = 0
+                    for name in rater_names:
+                        rating_dict = st.session_state.ratings.get(name, {})
+                        # max Rating dieses Users für die aktuellen Kandidaten
+                        max_r = max(
+                            rating_dict.get(row["track_id"], 1)
+                            for _, row in songs_df.iterrows()
+                        )
+                        if max_r < 3:
+                            unhappy_count += 1
+
+                    if unhappy_count > num_raters / 2:
+                        # Mehr als die Hälfte findet das Set schlecht -> alles neu
+                        st.warning(
+                            "Mehr als die Hälfte der Gruppe hat alle Songs unter 3★ bewertet. "
+                            "Es wird ein neuer Vorschlag von Songs generiert, den alle erneut bewerten."
+                        )
+
+                        # Ratings komplett zurücksetzen
+                        st.session_state.ratings = {name: {} for name in rater_names}
+
+                        # Kandidaten-Songs verwerfen, damit im nächsten Run neu gezogen wird
+                        if "candidate_songs" in st.session_state:
+                            del st.session_state.candidate_songs
+
+                        # Zurück zu Rater 1 und Step 3
+                        st.session_state.active_rater_idx = 0
+                        st.session_state.evaluation_done = False
+                        st.session_state.step = 3
+
+                        st.rerun()
+
+                    else:
+
+                        
                     # ------------------------------
                     # START MACHINE LEARNING PART 
                     # ------------------------------
