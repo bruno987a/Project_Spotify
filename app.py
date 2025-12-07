@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 import random
 import matplotlib.pyplot as plt
-from sklearn.decomposition import PCA
 from pathlib import Path
 from sklearn.neighbors import NearestNeighbors  # Machine Learning algorithm @Lorenz
 from sklearn.preprocessing import StandardScaler
@@ -646,93 +645,46 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
             use_container_width=True
         )
             # ---------------------------------------------
-    # Optional: PCA visualization in a dropdown
+    # Simple visualization: distribution of ratings
     # ---------------------------------------------
     st.markdown(
-        "See how your recommended songs are positioned "
-        "in the overall audio feature space:"
+        "#### How did the group rate the songs overall?"
     )
 
-    with st.expander("🔍 Show feature similarity of recommended songs (PCA)"):
-        st.write(
-            "This plot shows your recommended songs in a 2D space derived from 14 audio features "
-            "(MFCCs, loudness, spectral features, etc.). "
-            "Points that are closer together correspond to songs that are more similar in their audio characteristics."
-        )
+    # Collect all ratings from all users
+    all_ratings = []
+    for username, rating_dict in st.session_state.ratings.items():
+        all_ratings.extend(rating_dict.values())
 
-        # Load and prepare feature data (same file as in the ML part)
-        features = pd.read_csv(DATA_DIR / "reduced_features.csv", index_col=0)
-
-        feature_cols = [
-            "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
-            "mfcc_06_mean", "mfcc_07_mean", "mfcc_08_mean", "mfcc_09_mean", "mfcc_10_mean",
-            "rmse_01_mean",
-            "spectral_centroid_01_mean",
-            "spectral_bandwidth_01_mean",
-            "chroma_var",
-        ]
-        features_14 = features[feature_cols].copy()
-
-        # Scale features (same preprocessing as in the recommender)
-        scaler = StandardScaler()
-        X_14 = scaler.fit_transform(features_14)
-        features_14_scaled = pd.DataFrame(X_14, index=features.index, columns=feature_cols)
-
-        # Keep only tracks that have feature vectors
-        rec_ids = [
-            tid for tid in st.session_state.recommended_ids
-            if tid in features_14_scaled.index
-        ]
-
-        if len(rec_ids) >= 2:
-            # Run PCA on ALL tracks to get global space
-            pca = PCA(n_components=2)
-            X_2d = pca.fit_transform(features_14_scaled.values)
-            coords = pd.DataFrame(
-                X_2d,
-                index=features_14_scaled.index,
-                columns=["PC1", "PC2"]
+    if all_ratings:
+        with st.expander("📊 Show rating distribution"):
+            st.write(
+                "This chart shows how often each rating from 1 to 5 was given. "
+                "It gives an overview of how strict or generous the group was when evaluating songs."
             )
 
-            # Mark recommended vs others
-            coords["is_recommended"] = coords.index.isin(rec_ids)
+            fig, ax = plt.subplots(figsize=(5, 3))  # smaller plot
 
-            # Build a smaller plot
-            fig, ax = plt.subplots(figsize=(5, 3))  # <-- smaller figure
-
-            # Background: all other tracks (light / transparent)
-            others = coords[~coords["is_recommended"]]
-            ax.scatter(
-                others["PC1"],
-                others["PC2"],
-                alpha=0.08,
-                s=10,
+            # Bins centered on 1, 2, 3, 4, 5
+            ax.hist(
+                all_ratings,
+                bins=[0.5, 1.5, 2.5, 3.5, 4.5, 5.5],
+                edgecolor="black",
             )
-
-            # Highlight: recommended tracks
-            rec = coords[coords["is_recommended"]]
-            ax.scatter(
-                rec["PC1"],
-                rec["PC2"],
-                alpha=0.9,
-                s=40,
-            )
-
-            ax.set_xlabel("Principal Component 1")
-            ax.set_ylabel("Principal Component 2")
-            ax.set_title("PCA projection of audio feature space")
+            ax.set_xticks([1, 2, 3, 4, 5])
+            ax.set_xlabel("Rating (1 = dislike, 5 = love)")
+            ax.set_ylabel("Number of ratings")
+            ax.set_title("Distribution of all song ratings")
 
             st.pyplot(fig)
 
             st.caption(
-                "Red points are your recommended songs. Songs that are close together in this plot "
-                "have similar audio features (timbre, loudness, spectral shape, etc.)."
+                "If most bars are at 4 and 5, the group liked many songs. "
+                "If many ratings are 1 or 2, the group was more critical."
             )
-        else:
-            st.info(
-                "Not enough recommended songs to show the PCA similarity plot."
-            )
-    
+    else:
+        st.info("No ratings available to show a distribution yet.")
+            
 
     if st.button("🔁 Start over", use_container_width=True):
             # Completely clear session state
