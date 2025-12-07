@@ -226,6 +226,8 @@ def render_sidebar():
             f"<div class='{css}'>{icon} {label}</div>", unsafe_allow_html=True
         )
 
+render_sidebar()
+
 
 # -------------------------
 # ---------Group Setup
