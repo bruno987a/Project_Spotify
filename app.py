@@ -254,17 +254,19 @@ if st.session_state.step >= 1:
         st.caption("Add everyone who will rate songs. We’ll combine all tastes into one smart playlist.")
 
         # BEFORE "Confirm group" is clicked → show editable inputs
-        if st.session_state.step == 1:
+        col1, col2 = st.columns([1, 2])
+
+        with col1:
             num = st.number_input(
                 "Number of raters",
                 min_value=1,
                 max_value=10,
                 value=int(st.session_state.num_raters),
                 step=1,
-                key="num_raters_input"
+                key="num_raters_input",
             )
 
-            # name inputs
+        with col2:
             names = []
             for i in range(int(num)):
                 default_name = (
@@ -273,7 +275,11 @@ if st.session_state.step >= 1:
                     else f"User {i+1}"
                 )
                 names.append(
-                    st.text_input(f"Rater {i+1} name", value=default_name, key=f"rater_name_{i}")
+                    st.text_input(
+                        f"Rater {i+1} name",
+                        value=default_name,
+                        key=f"rater_name_{i}",
+                    )
                 )
 
             if st.button("✅ Confirm group & continue", use_container_width=True):
@@ -290,10 +296,10 @@ if st.session_state.step >= 1:
                 st.rerun()
 
         # AFTER confirm group → show summary 
-        else:
-            total = st.session_state.num_raters
-            names_display = ", ".join(st.session_state.rater_names)
-            st.info(f"**Total raters:** {total} – {names_display}")
+            else:
+                total = st.session_state.num_raters
+                names_display = ", ".join(st.session_state.rater_names)
+                st.info(f"**Total raters:** {total} – {names_display}")
 
 
 # -------------------------
@@ -583,6 +589,6 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
 
 # Footer avec style Code 1
 st.markdown(
-    '<div class="footer">© 2025 Cookable</div>',
+    '<div class="footer">© Smart Playlist</div>',
     unsafe_allow_html=True
 )
