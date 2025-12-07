@@ -576,70 +576,70 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                     # ------------------------------
                     # START MACHINE LEARNING PART 
                     # ------------------------------
-                    features = pd.read_csv(DATA_DIR / "reduced_features.csv", index_col=0)
+                        features = pd.read_csv(DATA_DIR / "reduced_features.csv", index_col=0)
 
-                    feature_cols = [
-                        "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
-                        "mfcc_06_mean", "mfcc_07_mean", "mfcc_08_mean", "mfcc_09_mean", "mfcc_10_mean",
-                        "rmse_01_mean",
-                        "spectral_centroid_01_mean",
-                        "spectral_bandwidth_01_mean",
-                        "chroma_var"
-                    ]
-                    features_14 = features[feature_cols].copy()
+                        feature_cols = [
+                            "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
+                            "mfcc_06_mean", "mfcc_07_mean", "mfcc_08_mean", "mfcc_09_mean", "mfcc_10_mean",
+                            "rmse_01_mean",
+                            "spectral_centroid_01_mean",
+                            "spectral_bandwidth_01_mean",
+                            "chroma_var"
+                        ]
+                        features_14 = features[feature_cols].copy()
 
-                    scaler = StandardScaler()
-                    X_14 = scaler.fit_transform(features_14)
-                    features_14_scaled = pd.DataFrame(X_14, index=features.index, columns=feature_cols)
+                        scaler = StandardScaler()
+                        X_14 = scaler.fit_transform(features_14)
+                        features_14_scaled = pd.DataFrame(X_14, index=features.index, columns=feature_cols)
 
-                    def build_user_profile(ratings_list, rated_ids, features_df):
-                        ratings = np.asarray(ratings_list, dtype=float)
-                        vecs = features_df.loc[rated_ids].values
-                        return np.average(vecs, axis=0, weights=ratings)
-                    
-                    def weight_adjustment(points: int) -> float:
-                        return (points / 3.0) ** 2
+                        def build_user_profile(ratings_list, rated_ids, features_df):
+                            ratings = np.asarray(ratings_list, dtype=float)
+                            vecs = features_df.loc[rated_ids].values
+                            return np.average(vecs, axis=0, weights=ratings)
+                        
+                        def weight_adjustment(points: int) -> float:
+                            return (points / 3.0) ** 2
 
-                    user_profiles = []
-                    for username, rating_dict in st.session_state.ratings.items():
-                        if not rating_dict:
-                            continue
+                        user_profiles = []
+                        for username, rating_dict in st.session_state.ratings.items():
+                            if not rating_dict:
+                                continue
 
-                        rated_ids = [tid for tid in rating_dict.keys() if tid in features_14_scaled.index]
-                        if not rated_ids:
-                            continue
+                            rated_ids = [tid for tid in rating_dict.keys() if tid in features_14_scaled.index]
+                            if not rated_ids:
+                                continue
 
-                        ratings_list = [weight_adjustment(rating_dict[tid]) for tid in rated_ids]
-                        user_profiles.append(build_user_profile(ratings_list, rated_ids, features_14_scaled))
+                            ratings_list = [weight_adjustment(rating_dict[tid]) for tid in rated_ids]
+                            user_profiles.append(build_user_profile(ratings_list, rated_ids, features_14_scaled))
 
-                    if len(user_profiles) == 0:
-                        st.error("There are no usable ratings - no recommendation possible.")
-                        st.stop()
+                        if len(user_profiles) == 0:
+                            st.error("There are no usable ratings - no recommendation possible.")
+                            st.stop()
 
-                    group_vector = np.mean(user_profiles, axis=0)
+                        group_vector = np.mean(user_profiles, axis=0)
 
-                    X = features_14_scaled.values
-                    track_ids = features_14_scaled.index.to_numpy()
+                        X = features_14_scaled.values
+                        track_ids = features_14_scaled.index.to_numpy()
 
-                    knn_model = NearestNeighbors(metric="cosine", n_neighbors=200)
-                    knn_model.fit(X)
+                        knn_model = NearestNeighbors(metric="cosine", n_neighbors=200)
+                        knn_model.fit(X)
 
-                    def recommend(group_vec, n_songs):
-                        _, nn_idx = knn_model.kneighbors(group_vec.reshape(1, -1), n_neighbors=n_songs)
-                        return track_ids[nn_idx[0]]
+                        def recommend(group_vec, n_songs):
+                            _, nn_idx = knn_model.kneighbors(group_vec.reshape(1, -1), n_neighbors=n_songs)
+                            return track_ids[nn_idx[0]]
 
-                    recommended_ids = recommend(group_vector, st.session_state.n_desired_songs).tolist()
+                        recommended_ids = recommend(group_vector, st.session_state.n_desired_songs).tolist()
 
-                    # store for step 4
-                    st.session_state.recommended_ids = recommended_ids
-                    st.session_state.evaluation_done = True
-                    st.session_state.step = 4
+                        # store for step 4
+                        st.session_state.recommended_ids = recommended_ids
+                        st.session_state.evaluation_done = True
+                        st.session_state.step = 4
 
-                    # 🔹 tell next run to show success message on the final page
-                    st.session_state.final_success_message = True
+                        # 🔹 tell next run to show success message on the final page
+                        st.session_state.final_success_message = True
 
-                    # 🔹 force rerun so sidebar + final playlist update immediately
-                    st.rerun() 
+                        # 🔹 force rerun so sidebar + final playlist update immediately
+                        st.rerun() 
 
 # -------------------------
 # STEP 3 — Final Playlist 
