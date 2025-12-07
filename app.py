@@ -424,12 +424,21 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
 
         st.markdown("### Quick song evaluation")
 
+        if st.session_state.num_raters > 1:
+            st.caption(
+                "Everyone rates a handful of songs. We’ll learn what the whole group likes and dislikes."
+            )
+        else:
+            st.caption(
+                "Please rate a handful of songs. We'll learn what you like and dislike."
+            )
+
         rater_names = st.session_state.rater_names
         idx_rater = st.session_state.active_rater_idx
         current_user = rater_names[idx_rater]
 
         st.write(f"**Rater {idx_rater + 1} / {len(rater_names)}:** {current_user}")
-        st.caption("Please rate the following songs. 1 = dislike · 5 = love")
+    
 
         # make sure this user's dict exists
         st.session_state.ratings.setdefault(current_user, {})
