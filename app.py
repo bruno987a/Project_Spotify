@@ -137,7 +137,7 @@ if st.session_state.step >= 1:
 
             st.rerun()
 
-    # AFTER confirm group → show summary permanently
+    # AFTER confirm group → show summary 
     else:
         st.info(
             " **Group:** "
