@@ -309,10 +309,7 @@ if st.session_state.step >= 1:
 
 
 # -------------------------
-# STEP 1 — Generation Criteria (en card)
-# -------------------------
-# -------------------------
-# STEP 1 — Playlist generation criteria (DESIGN LIKE CODE 1)
+# STEP 1 — Playlist generation criteria (avec placeholder + popup)
 # -------------------------
 if st.session_state.step >= 2:
     with st.container():
@@ -328,12 +325,12 @@ if st.session_state.step >= 2:
             col1, col2 = st.columns(2)
 
             with col1:
-                similarity = st.selectbox(
+                similarity_raw = st.selectbox(
                     "Similarity level",
                     ["None", "Genre", "Artist", "Mixed"],
-                    index=0,  # default selection
-                    format_func=lambda x: f"*{x}*" if x == "None" else x,
-                    key="similarity"
+                    index=None,                     # ← pas de sélection par défaut
+                    placeholder="Choose an option", # ← texte grisé
+                    key="similarity_raw",
                 )
 
             with col2:
@@ -345,30 +342,54 @@ if st.session_state.step >= 2:
                     "Funk": 11
                 }
 
-                key_genre = st.selectbox(
+                genre_raw = st.selectbox(
                     "Preferred genre",
                     list(genre_map.keys()),
+                    index=None,                     # ← pas de sélection par défaut
+                    placeholder="Choose an option", # ← texte grisé
+                    key="genre_raw",
                 )
 
             # Playlist length – full width, same as Code 1
-            st.session_state.chosen_genre = genre_map[key_genre]
             st.session_state.n_desired_songs = st.slider(
                 "Playlist length (number of songs)",
                 5, 30, 15,
             )
 
-            # Confirm button aligned like Code 1
+            # Confirm button
             if st.button("✅ Confirm criteria & start rating", use_container_width=True):
-                st.session_state.criteria_confirmed = True
-                st.session_state.step = 3
-                st.session_state.evaluation_done = False
-                st.session_state.active_rater_idx = 0
-                if "candidate_songs" in st.session_state:
-                    del st.session_state.candidate_songs
+                if similarity_raw is None or genre_raw is None:
+                    # "Popup" style warning (comme dans Code 1)
+                    st.markdown(
+                        """
+                        <div style="
+                            padding: 0.8rem 1rem;
+                            background-color: #fee2e2;
+                            color: #b91c1c;
+                            border: 1px solid #b91c1c;
+                            border-radius: 0.6rem;
+                            font-weight: 500;
+                            margin-top: 0.5rem;">
+                            Please choose both a similarity level and a preferred genre before continuing.
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    # on enregistre les choix comme avant
+                    st.session_state["similarity"] = similarity_raw
+                    st.session_state.chosen_genre = genre_map[genre_raw]
 
-                st.rerun()
+                    st.session_state.criteria_confirmed = True
+                    st.session_state.step = 3
+                    st.session_state.evaluation_done = False
+                    st.session_state.active_rater_idx = 0
+                    if "candidate_songs" in st.session_state:
+                        del st.session_state.candidate_songs
 
-        # AFTER confirming → summary card like Code 1
+                    st.rerun()
+
+        # AFTER confirming → summary card
         else:
             reverse_genre_map = {
                 1: "Rock/Metal/Punk", 2: "Pop/Synth", 3: "Electronic/IDM",
@@ -390,6 +411,7 @@ if st.session_state.step >= 2:
 • Desired playlist length: **{st.session_state.n_desired_songs} songs**
 """
             )
+
 
 
 
