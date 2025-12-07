@@ -677,11 +677,6 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
             ax.set_title("Distribution of all song ratings")
 
             st.pyplot(fig)
-
-            st.caption(
-                "If most bars are at 4 and 5, the group liked many songs. "
-                "If many ratings are 1 or 2, the group was more critical."
-            )
     else:
         st.info("No ratings available to show a distribution yet.")
             
