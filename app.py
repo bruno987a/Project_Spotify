@@ -230,9 +230,7 @@ def render_sidebar():
 
 render_sidebar()
 
-# -------------------------
-# Titre principal (design Code 1)
-# -------------------------
+
 st.markdown(
     '<div class="main-title">Smart Playlist Generator</div>',
     unsafe_allow_html=True,
@@ -349,7 +347,7 @@ if st.session_state.step >= 2:
                     key="genre_raw",
                 )
 
-            # Playlist length – full width, same as Code 1
+            # Playlist length – full width
             st.session_state.n_desired_songs = st.slider(
                 "Playlist length (number of songs)",
                 5, 30, 15,
@@ -358,7 +356,7 @@ if st.session_state.step >= 2:
             # Confirm button
             if st.button("✅ Confirm criteria & start rating", use_container_width=True):
                 if similarity_raw is None or genre_raw is None:
-                    # "Popup" style warning (comme dans Code 1)
+                    # "Popup" style warning 
                     st.markdown(
                         """
                         <div style="
@@ -376,7 +374,6 @@ if st.session_state.step >= 2:
                         unsafe_allow_html=True,
                     )
                 else:
-                    # on enregistre les choix comme avant
                     st.session_state["similarity"] = similarity_raw
                     st.session_state.chosen_genre = genre_map[genre_raw]
 
@@ -416,7 +413,7 @@ if st.session_state.step >= 2:
 
 
 # -------------------------
-# STEP 2 — Quick Evaluation (en card, mais ML identique à Code 2)
+# STEP 2 — Quick Evaluation 
 # -------------------------
 if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
     with st.container():
@@ -606,7 +603,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                     st.rerun() 
 
 # -------------------------
-# STEP 3 — Final Playlist (en card)
+# STEP 3 — Final Playlist 
 # -------------------------
 if st.session_state.step >= 4 and st.session_state.evaluation_done:
     with st.container():
@@ -621,7 +618,6 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
             st.success(msg)
             st.session_state.final_success_message = False
 
-        # s_t vient de plus haut (dans step 2), on le recharge au cas où
         t = pd.read_sql_query("SELECT * FROM tracks_small", DB)
         s_t = pd.DataFrame({
             "track_id": t["track_id"],
