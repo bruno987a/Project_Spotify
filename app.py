@@ -3,7 +3,7 @@ import sqlite3
 import pandas as pd
 import numpy as np
 import random
-import matplotlib.pyplot as plt
+import plotly.express as px
 from sklearn.decomposition import PCA
 from pathlib import Path
 from sklearn.neighbors import NearestNeighbors  # Machine Learning algorithm @Lorenz
@@ -677,9 +677,12 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
             # ---------------------------------------------
     # Visualization: Feature similarity of recommended tracks (PCA 2D plot)
     # ---------------------------------------------
+    # ---------------------------------------------
+# Visualization: Feature similarity of recommended tracks (PCA 2D plot, Plotly version)
+# ---------------------------------------------
     st.markdown("#### Feature similarity of your recommended songs")
 
-    # Load and prepare feature data (same file as in the ML part)
+# Load feature data
     features = pd.read_csv(DATA_DIR / "reduced_features.csv", index_col=0)
 
     feature_cols = [
@@ -692,63 +695,41 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
     ]
     features_14 = features[feature_cols].copy()
 
-    # Scale features (same preprocessing as in the recommender)
+# Scale features
     scaler = StandardScaler()
     X_14 = scaler.fit_transform(features_14)
     features_14_scaled = pd.DataFrame(X_14, index=features.index, columns=feature_cols)
 
-    # Keep only tracks that have feature vectors
     rec_ids = [tid for tid in st.session_state.recommended_ids if tid in features_14_scaled.index]
 
     if len(rec_ids) >= 2:
-        # Run PCA on ALL tracks to get global space
+    # PCA to 2D
         pca = PCA(n_components=2)
         X_2d = pca.fit_transform(features_14_scaled.values)
-        coords = pd.DataFrame(X_2d, index=features_14_scaled.index, columns=["PC1", "PC2"])
+        coords = pd.DataFrame(X_2d, index=features.index, columns=["PC1", "PC2"])
 
-        # Mark recommended vs others
-        coords["is_recommended"] = coords.index.isin(rec_ids)
+        coords["recommended"] = coords.index.isin(rec_ids)
+        coords["track_id"] = coords.index
 
-        # Build the plot
-        fig, ax = plt.subplots()
-
-        # Background: all other tracks (light / transparent)
-        others = coords[~coords["is_recommended"]]
-        ax.scatter(
-            others["PC1"],
-            others["PC2"],
-            alpha=0.08,
-            s=10,
+    # Plotly scatter plot
+        fig = px.scatter(
+            coords,
+            x="PC1",
+            y="PC2",
+            color="recommended",
+            color_discrete_map={True: "red", False: "lightgray"},
+            hover_data=["track_id"],
+            opacity=0.7,
+            title="Feature similarity of recommended tracks (PCA projection)"
         )
 
-        # Highlight: recommended tracks (solid points)
-        rec = coords[coords["is_recommended"]]
-        ax.scatter(
-            rec["PC1"],
-            rec["PC2"],
-            alpha=0.9,
-            s=40,
-        )
+        fig.update_layout(showlegend=False)
 
-        ax.set_xlabel("Principal Component 1")
-        ax.set_ylabel("Principal Component 2")
-        ax.set_title("Feature similarity of recommended tracks (PCA)")
+        st.plotly_chart(fig, use_container_width=True)
 
-        st.pyplot(fig)
     else:
         st.info("Not enough recommended songs to show a feature-space visualization.")
 
-
-        st.markdown("**Summary:**")
-        st.write(f"- Total songs: {len(df_final)}")
-
-        if st.button("🔁 Start over", use_container_width=True):
-            # Completely clear session state
-            for key in list(st.session_state.keys()):
-                del st.session_state[key]
-
-            # Rerun to reinitialize everything
-            st.rerun()
 
 
 st.markdown(
