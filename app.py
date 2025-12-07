@@ -31,6 +31,10 @@ st.set_page_config(
 # Streamlit app setup
 # -------------------------
 
+
+st.title("Smart Playlist Generator")
+st.markdown("Create personalized playlists based on your musical preferences and feedback.")
+
 # Initialize session state for progress tracking
 # Initialize session state
 if "step" not in st.session_state:
@@ -72,7 +76,7 @@ st.markdown(
     <style>
     /* Make global text bigger */
     html, body, .stApp {
-        font-size: 17px;  /* base size up from default */
+        font-size: 16px;  /* base size up from default */
     }
 
     /* Overall background – white */
@@ -222,61 +226,58 @@ def render_sidebar():
             f"<div class='{css}'>{icon} {label}</div>", unsafe_allow_html=True
         )
 
+render_sidebar()
 
 
 # -------------------------
 # ---------Group Setup
 # -------------------------
-def step_group_setup():
-    with st.container():
-        st.markdown('<div class="step-card"></div>', unsafe_allow_html=True)
+if st.session_state.step >= 1:
+    st.header("Step 0 – Group setup")
 
-        st.markdown("### Setup")
-        st.caption(
-            "Add everyone who will rate songs. We’ll combine all tastes into one smart playlist."
+    # BEFORE "Confirm group" is clicked → show editable inputs
+    if st.session_state.step == 1:
+        num = st.number_input(
+            "How many people are going to rate?",
+            min_value=1,
+            max_value=10,
+            value=int(st.session_state.num_raters),
+            step=1,
+            key="num_raters_input"
         )
 
-        if st.session_state.step == 1:
-            col1, col2 = st.columns([1, 2])
+        # name inputs
+        names = []
+        for i in range(int(num)):
+            default_name = (
+                st.session_state.rater_names[i]
+                if i < len(st.session_state.rater_names)
+                else f"User {i+1}"
+            )
+            names.append(
+                st.text_input(f"Rater {i+1} name", value=default_name, key=f"rater_name_{i}")
+            )
 
-            with col1:
-                num = st.number_input(
-                    "Number of raters",
-                    min_value=1,
-                    max_value=10,
-                    value=int(st.session_state.num_raters),
-                    step=1,
-                    key="num_raters_input",
-                )
+        if st.button("Confirm group"):
+            clean_names = [(n.strip() or f"User {i+1}") for i, n in enumerate(names)]
+            st.session_state.num_raters = int(num)
+            st.session_state.rater_names = clean_names
 
-            names = []
-            with col2:
-                for i in range(int(num)):
-                    default_name = (
-                        st.session_state.rater_names[i]
-                        if i < len(st.session_state.rater_names)
-                        else f"User {i+1}"
-                    )
-                    names.append(
-                        st.text_input(
-                            f"Rater {i+1} name",
-                            value=default_name,
-                            key=f"rater_name_{i}",
-                        )
-                    )
+            # initialize ratings dict per person
+            st.session_state.ratings = {name: {} for name in clean_names}
 
-            if st.button("✅ Confirm group & continue", use_container_width=True):
-                clean_names = [(n.strip() or f"User {i+1}") for i, n in enumerate(names)]
-                st.session_state.num_raters = int(num)
-                st.session_state.rater_names = clean_names
-                st.session_state.ratings = {name: {} for name in clean_names}
-                st.session_state.active_rater_idx = 0
-                st.session_state.step = 2
-                st.rerun()
-        else:
-            total = st.session_state.num_raters
-            names_display = ", ".join(st.session_state.rater_names)
-            st.info(f"**Total raters:** {total} – {names_display}")
+            st.session_state.active_rater_idx = 0
+            st.session_state.step = 2  # GO TO STEP 1
+
+            st.rerun()
+
+    # AFTER confirm group → show summary 
+    else:
+        st.info(
+            " **Group:** "
+            + ", ".join(st.session_state.rater_names)
+            + f"  —  Total raters: {st.session_state.num_raters}"
+        )
     
 
 
@@ -552,26 +553,11 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
         # Rerun to reinitialize everything
         st.rerun()  # use st.experimental_rerun() if your Streamlit version is older
 
-
-# =========================================================
-# Main Layout
-# =========================================================
-render_sidebar()
-
 st.markdown(
-    '<div class="main-title">Smart Playlist Generator</div>',
-    unsafe_allow_html=True,
-)
-st.markdown(
-    '<div class="main-subtitle">'
-    "Create group playlists that balance everyone’s taste."
+    "<div style='text-align: center; color: #888; padding: 20px;'>"
+    "© 2025 Cookable"
     "</div>",
-    unsafe_allow_html=True,
+    unsafe_allow_html=True
 )
 
-step_group_setup()
-step_criteria()
-step_quick_evaluation()
-step_final_playlist()
 
-st.markdown('<div class="footer">© Smart Playlist</div>', unsafe_allow_html=True)
