@@ -246,41 +246,46 @@ st.markdown(
 # -------------------------
 # ---------Group Setup (Step 0) dans une card
 # -------------------------
+# --------- Setup (Step 0) ----------
 if st.session_state.step >= 1:
     with st.container():
+        # Invisible marker so the global CSS applies the card style
         st.markdown('<div class="step-card"></div>', unsafe_allow_html=True)
 
         st.markdown("### Setup")
-        st.caption("Add everyone who will rate songs. We’ll combine all tastes into one smart playlist.")
+        st.caption(
+            "Add everyone who will rate songs. We’ll combine all tastes into one smart playlist."
+        )
 
         # BEFORE "Confirm group" is clicked → show editable inputs
-        col1, col2 = st.columns([1, 2])
+        if st.session_state.step == 1:
+            col1, col2 = st.columns([1, 2])
 
-        with col1:
-            num = st.number_input(
-                "Number of raters",
-                min_value=1,
-                max_value=10,
-                value=int(st.session_state.num_raters),
-                step=1,
-                key="num_raters_input",
-            )
+            with col1:
+                num = st.number_input(
+                    "Number of raters",
+                    min_value=1,
+                    max_value=10,
+                    value=int(st.session_state.num_raters),
+                    step=1,
+                    key="num_raters_input",
+                )
 
-        with col2:
             names = []
-            for i in range(int(num)):
-                default_name = (
-                    st.session_state.rater_names[i]
-                    if i < len(st.session_state.rater_names)
-                    else f"User {i+1}"
-                )
-                names.append(
-                    st.text_input(
-                        f"Rater {i+1} name",
-                        value=default_name,
-                        key=f"rater_name_{i}",
+            with col2:
+                for i in range(int(num)):
+                    default_name = (
+                        st.session_state.rater_names[i]
+                        if i < len(st.session_state.rater_names)
+                        else f"User {i+1}"
                     )
-                )
+                    names.append(
+                        st.text_input(
+                            f"Rater {i+1} name",
+                            value=default_name,
+                            key=f"rater_name_{i}",
+                        )
+                    )
 
             if st.button("✅ Confirm group & continue", use_container_width=True):
                 clean_names = [(n.strip() or f"User {i+1}") for i, n in enumerate(names)]
@@ -291,15 +296,16 @@ if st.session_state.step >= 1:
                 st.session_state.ratings = {name: {} for name in clean_names}
 
                 st.session_state.active_rater_idx = 0
-                st.session_state.step = 2  # GO TO STEP 1
+                st.session_state.step = 2  # go to criteria step
 
                 st.rerun()
 
-        # AFTER confirm group → show summary 
-            else:
-                total = st.session_state.num_raters
-                names_display = ", ".join(st.session_state.rater_names)
-                st.info(f"**Total raters:** {total} – {names_display}")
+        # AFTER confirm group → show summary
+        else:
+            total = st.session_state.num_raters
+            names_display = ", ".join(st.session_state.rater_names)
+            st.info(f"**Total raters:** {total} – {names_display}")
+
 
 
 # -------------------------
