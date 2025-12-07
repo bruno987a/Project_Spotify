@@ -93,6 +93,19 @@ st.markdown(
         border: 1px solid #d1d5db !important;
         font-size: 1rem !important;
     }
+    /* Make the "Generate final playlist" button red */
+    div.stButton > button[kind="primary"] {
+        background-color: #dc2626 !important;   /* red */
+        border: 1px solid #b91c1c !important;   /* darker red border */
+        color: white !important;                /* white text */
+    }
+
+    /* Hover effect */
+    div.stButton > button[kind="primary"]:hover {
+        background-color: #b91c1c !important;   /* darker red */
+        border-color: #7f1d1d !important;
+    }
+
 
     /* Make most labels and normal text a bit larger */
     label, .stMarkdown p, .stMarkdown li, .stCheckbox, .stRadio, .stSlider label {
