@@ -649,8 +649,8 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
     # Optional: PCA visualization in a dropdown
     # ---------------------------------------------
     st.markdown(
-        "You can also inspect how your recommended songs are positioned "
-        "in the overall audio feature space (optional):"
+        "See how your recommended songs are positioned "
+        "in the overall audio feature space:"
     )
 
     with st.expander("🔍 Show feature similarity of recommended songs (PCA)"):
@@ -734,13 +734,12 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
             )
     
 
-        if st.button("🔁 Start over", use_container_width=True):
+    if st.button("🔁 Start over", use_container_width=True):
             # Completely clear session state
-            for key in list(st.session_state.keys()):
-                del st.session_state[key]
-
+        for key in list(st.session_state.keys()):
+            del st.session_state[key]
             # Rerun to reinitialize everything
-            st.rerun()
+        st.rerun()
 
 
 st.markdown(
