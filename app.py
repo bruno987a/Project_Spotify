@@ -3,8 +3,6 @@ import sqlite3
 import pandas as pd
 import numpy as np
 import random
-import plotly.express as px
-from sklearn.decomposition import PCA
 from pathlib import Path
 from sklearn.neighbors import NearestNeighbors  # Machine Learning algorithm @Lorenz
 from sklearn.preprocessing import StandardScaler
@@ -536,112 +534,73 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                 # allow generation for last rater
                 if st.button("🎉 Generate final playlist", type="primary", use_container_width=True):
 
-                    # 1) Gruppenzufriedenheit prüfen
-                    rater_names = st.session_state.rater_names
-                    num_raters = len(rater_names)
-
-                    unhappy_count = 0
-                    for name in rater_names:
-                        rating_dict = st.session_state.ratings.get(name, {})
-                        # max Rating dieses Users für die aktuellen Kandidaten
-                        max_r = max(
-                            rating_dict.get(row["track_id"], 1)
-                            for _, row in songs_df.iterrows()
-                        )
-                        if max_r < 3:
-                            unhappy_count += 1
-
-                    if unhappy_count > num_raters / 2:
-                        # Mehr als die Hälfte findet das Set schlecht -> alles neu
-                        st.warning(
-                            "Mehr als die Hälfte der Gruppe hat alle Songs unter 3★ bewertet. "
-                            "Es wird ein neuer Vorschlag von Songs generiert, den alle erneut bewerten."
-                        )
-
-                        # Ratings komplett zurücksetzen
-                        st.session_state.ratings = {name: {} for name in rater_names}
-
-                        # Kandidaten-Songs verwerfen, damit im nächsten Run neu gezogen wird
-                        if "candidate_songs" in st.session_state:
-                            del st.session_state.candidate_songs
-
-                        # Zurück zu Rater 1 und Step 3
-                        st.session_state.active_rater_idx = 0
-                        st.session_state.evaluation_done = False
-                        st.session_state.step = 3
-
-                        st.rerun()
-
-                    else:
-
-                        
                     # ------------------------------
                     # START MACHINE LEARNING PART 
                     # ------------------------------
-                        features = pd.read_csv(DATA_DIR / "reduced_features.csv", index_col=0)
+                    features = pd.read_csv(DATA_DIR / "reduced_features.csv", index_col=0)
 
-                        feature_cols = [
-                            "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
-                            "mfcc_06_mean", "mfcc_07_mean", "mfcc_08_mean", "mfcc_09_mean", "mfcc_10_mean",
-                            "rmse_01_mean",
-                            "spectral_centroid_01_mean",
-                            "spectral_bandwidth_01_mean",
-                            "chroma_var"
-                        ]
-                        features_14 = features[feature_cols].copy()
+                    feature_cols = [
+                        "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
+                        "mfcc_06_mean", "mfcc_07_mean", "mfcc_08_mean", "mfcc_09_mean", "mfcc_10_mean",
+                        "rmse_01_mean",
+                        "spectral_centroid_01_mean",
+                        "spectral_bandwidth_01_mean",
+                        "chroma_var"
+                    ]
+                    features_14 = features[feature_cols].copy()
 
-                        scaler = StandardScaler()
-                        X_14 = scaler.fit_transform(features_14)
-                        features_14_scaled = pd.DataFrame(X_14, index=features.index, columns=feature_cols)
+                    scaler = StandardScaler()
+                    X_14 = scaler.fit_transform(features_14)
+                    features_14_scaled = pd.DataFrame(X_14, index=features.index, columns=feature_cols)
 
-                        def build_user_profile(ratings_list, rated_ids, features_df):
-                            ratings = np.asarray(ratings_list, dtype=float)
-                            vecs = features_df.loc[rated_ids].values
-                            return np.average(vecs, axis=0, weights=ratings)
-                        
-                        def weight_adjustment(points: int) -> float:
-                            return (points / 3.0) ** 2
+                    def build_user_profile(ratings_list, rated_ids, features_df):
+                        ratings = np.asarray(ratings_list, dtype=float)
+                        vecs = features_df.loc[rated_ids].values
+                        return np.average(vecs, axis=0, weights=ratings)
+                    
+                    def weight_adjustment(points: int) -> float:
+                        return (points / 3.0) ** 2
 
-                        user_profiles = []
-                        for username, rating_dict in st.session_state.ratings.items():
-                            if not rating_dict:
-                                continue
+                    user_profiles = []
+                    for username, rating_dict in st.session_state.ratings.items():
+                        if not rating_dict:
+                            continue
 
-                            rated_ids = [tid for tid in rating_dict.keys() if tid in features_14_scaled.index]
-                            if not rated_ids:
-                                continue
+                        rated_ids = [tid for tid in rating_dict.keys() if tid in features_14_scaled.index]
+                        if not rated_ids:
+                            continue
 
-                            ratings_list = [weight_adjustment(rating_dict[tid]) for tid in rated_ids]
-                            user_profiles.append(build_user_profile(ratings_list, rated_ids, features_14_scaled))
+                        ratings_list = [weight_adjustment(rating_dict[tid]) for tid in rated_ids]
+                        user_profiles.append(build_user_profile(ratings_list, rated_ids, features_14_scaled))
 
-                        if len(user_profiles) == 0:
-                            st.error("There are no usable ratings - no recommendation possible.")
-                            st.stop()
+                    if len(user_profiles) == 0:
+                        st.error("There are no usable ratings - no recommendation possible.")
+                        st.stop()
 
-                        group_vector = np.mean(user_profiles, axis=0)
+                    group_vector = np.mean(user_profiles, axis=0)
 
-                        X = features_14_scaled.values
-                        track_ids = features_14_scaled.index.to_numpy()
+                    X = features_14_scaled.values
+                    track_ids = features_14_scaled.index.to_numpy()
 
-                        knn_model = NearestNeighbors(metric="cosine", n_neighbors=200)
-                        knn_model.fit(X)
+                    knn_model = NearestNeighbors(metric="cosine", n_neighbors=200)
+                    knn_model.fit(X)
 
-                        def recommend(group_vec, n_songs):
-                            _, nn_idx = knn_model.kneighbors(group_vec.reshape(1, -1), n_neighbors=n_songs)
-                            return track_ids[nn_idx[0]]
+                    def recommend(group_vec, n_songs):
+                        _, nn_idx = knn_model.kneighbors(group_vec.reshape(1, -1), n_neighbors=n_songs)
+                        return track_ids[nn_idx[0]]
 
-                        recommended_ids = recommend(group_vector, st.session_state.n_desired_songs).tolist()
+                    recommended_ids = recommend(group_vector, st.session_state.n_desired_songs).tolist()
 
-                        # store for step 4
-                        st.session_state.recommended_ids = recommended_ids
-                        st.session_state.evaluation_done = True
-                        st.session_state.step = 4
+                    # store for step 4
+                    st.session_state.recommended_ids = recommended_ids
+                    st.session_state.evaluation_done = True
+                    st.session_state.step = 4
 
-                        # 🔹 tell next run to show success message on the final page
-                        st.session_state.final_success_message = True
+                    # 🔹 tell next run to show success message on the final page
+                    st.session_state.final_success_message = True
 
-                        # 🔹 force rerun so sidebar + final playlist update immediately
-                        st.rerun() 
+                    # 🔹 force rerun so sidebar + final playlist update immediately
+                    st.rerun() 
 
 # -------------------------
 # STEP 3 — Final Playlist 
@@ -674,62 +633,18 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
             df_final_display,
             use_container_width=True
         )
-            # ---------------------------------------------
-    # Visualization: Feature similarity of recommended tracks (PCA 2D plot)
-    # ---------------------------------------------
-    # ---------------------------------------------
-# Visualization: Feature similarity of recommended tracks (PCA 2D plot, Plotly version)
-# ---------------------------------------------
-    st.markdown("#### Feature similarity of your recommended songs")
+        
 
-# Load feature data
-    features = pd.read_csv(DATA_DIR / "reduced_features.csv", index_col=0)
+        st.markdown("**Summary:**")
+        st.write(f"- Total songs: {len(df_final)}")
 
-    feature_cols = [
-        "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
-        "mfcc_06_mean", "mfcc_07_mean", "mfcc_08_mean", "mfcc_09_mean", "mfcc_10_mean",
-        "rmse_01_mean",
-        "spectral_centroid_01_mean",
-        "spectral_bandwidth_01_mean",
-        "chroma_var",
-    ]
-    features_14 = features[feature_cols].copy()
+        if st.button("🔁 Start over", use_container_width=True):
+            # Completely clear session state
+            for key in list(st.session_state.keys()):
+                del st.session_state[key]
 
-# Scale features
-    scaler = StandardScaler()
-    X_14 = scaler.fit_transform(features_14)
-    features_14_scaled = pd.DataFrame(X_14, index=features.index, columns=feature_cols)
-
-    rec_ids = [tid for tid in st.session_state.recommended_ids if tid in features_14_scaled.index]
-
-    if len(rec_ids) >= 2:
-    # PCA to 2D
-        pca = PCA(n_components=2)
-        X_2d = pca.fit_transform(features_14_scaled.values)
-        coords = pd.DataFrame(X_2d, index=features.index, columns=["PC1", "PC2"])
-
-        coords["recommended"] = coords.index.isin(rec_ids)
-        coords["track_id"] = coords.index
-
-    # Plotly scatter plot
-        fig = px.scatter(
-            coords,
-            x="PC1",
-            y="PC2",
-            color="recommended",
-            color_discrete_map={True: "red", False: "lightgray"},
-            hover_data=["track_id"],
-            opacity=0.7,
-            title="Feature similarity of recommended tracks (PCA projection)"
-        )
-
-        fig.update_layout(showlegend=False)
-
-        st.plotly_chart(fig, use_container_width=True)
-
-    else:
-        st.info("Not enough recommended songs to show a feature-space visualization.")
-
+            # Rerun to reinitialize everything
+            st.rerun()
 
 
 st.markdown(
