@@ -647,10 +647,6 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
             # ---------------------------------------------
     # Simple visualization: distribution of ratings
     # ---------------------------------------------
-    st.markdown(
-        "#### How did the group rate the songs overall?"
-    )
-
     # Collect all ratings from all users
     all_ratings = []
     for username, rating_dict in st.session_state.ratings.items():
