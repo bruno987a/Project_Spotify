@@ -548,14 +548,16 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                 if st.button("🎉 Generate final playlist", type="primary", use_container_width=True):
 
                     # ==== Implement a check if at least half the group is happy with the suggested songs ====
-                    rater_names = st.session_state.rater_names
-                    num_raters = len(rater_names)
+                    rater_names = st.session_state.rater_names                              # List of all raters
+                    num_raters = len(rater_names)                                           # Number of users for average
 
-                    unhappy_count = 0
-                    for name in rater_names:
-                        rating_dict = st.session_state.ratings.get(name, {})
-                        # retrieve the maximum number of points given by each user
-                        max_r = max(
+                    unhappy_count = 0                                                       # Initialize a count for unhappy users
+                    track_ids = songs_df["track_id"].tolist()                               # List of all track IDs for max ratings
+                    
+                    for name in rater_names:                                                # Iterate over names of users
+                        rating_dict = st.session_state.ratings.get(name, {})                # Retrieve this user's rating
+                        
+                        max_r = max(                                                        # retrieve the maximum number of points given by each user
                             rating_dict.get(row["track_id"], 1)
                             for _, row in songs_df.iterrows()
                         )
