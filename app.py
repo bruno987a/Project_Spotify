@@ -563,15 +563,18 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                     scaler = StandardScaler()
                     X_14 = scaler.fit_transform(features_14)
                     features_14_scaled = pd.DataFrame(X_14, index=features.index, columns=feature_cols)
-
+                    
+                    # define function to create weighted vectors for each user's preferences
                     def build_user_profile(ratings_list, rated_ids, features_df):
                         ratings = np.asarray(ratings_list, dtype=float)
                         vecs = features_df.loc[rated_ids].values
                         return np.average(vecs, axis=0, weights=ratings)
                     
+                    # define function to weaken/ enhance song features of less/ more liked songs
                     def weight_adjustment(points: int) -> float:
                         return (points / 3.0) ** 2
-
+                    
+                    # set up empty list and append each user's vector
                     user_profiles = []
                     for username, rating_dict in st.session_state.ratings.items():
                         if not rating_dict:
