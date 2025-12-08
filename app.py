@@ -434,11 +434,11 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
 
         st.markdown("### Quick song evaluation")
 
-        if st.session_state.get("new_song_batch", False):
+        if st.session_state.get("new_song_batch", False):                                           # Display this message if new song set had to be generated
             st.info(
             "A new set of song suggestions was generated because the group was unsatisfied with the previous ones."
             )
-            st.session_state.new_song_batch = False
+            st.session_state.new_song_batch = False                                                 # Only show it for the first user
 
         if st.session_state.num_raters > 1:
             st.caption(
