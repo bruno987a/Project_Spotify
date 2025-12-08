@@ -690,33 +690,54 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
     # Simple visualization: distribution of ratings
     # ---------------------------------------------
     # Collect all ratings from all users
-    all_ratings = []
-    for username, rating_dict in st.session_state.ratings.items():
-        all_ratings.extend(rating_dict.values())
+        # ---------------------------------------------
+    # Simple visualization: per-song ratings by user
+    # ---------------------------------------------
+    if "candidate_songs" in st.session_state:
+        songs_df = st.session_state.candidate_songs.reset_index(drop=True)
 
-    if all_ratings:
-        with st.expander("📊 Show rating distribution"):
+        # X-axis labels: Song1, Song2, ...
+        song_labels = [f"Song {i+1}" for i in range(len(songs_df))]
+
+        with st.expander("📊 Show rating distribution per song and user"):
             st.write(
-                "This chart shows how often each rating from 1 to 5 was given. "
-                "It gives an overview of how strict or generous the group was when evaluating songs."
+                "This chart shows, for each of the quick evaluation songs "
+                "(Song 1–5), how every rater scored them. Each line is one user."
             )
 
-            fig, ax = plt.subplots(figsize=(5, 3))  # smaller plot
+            fig, ax = plt.subplots(figsize=(6, 3.5))  # small-ish plot
 
-            # Bins centered on 1, 2, 3, 4, 5
-            ax.hist(
-                all_ratings,
-                bins=[0.5, 1.5, 2.5, 3.5, 4.5, 5.5],
-                edgecolor="black",
-            )
-            ax.set_xticks([1, 2, 3, 4, 5])
-            ax.set_xlabel("Rating (1 = dislike, 5 = love)")
-            ax.set_ylabel("Number of ratings")
-            ax.set_title("Distribution of all song ratings")
+            # One line per user
+            for username in st.session_state.rater_names:
+                rating_dict = st.session_state.ratings.get(username, {})
+                user_values = []
+
+                # Keep the same song order as in the quick evaluation
+                for _, row in songs_df.iterrows():
+                    track_id = row["track_id"]
+                    # default to NaN if for some reason a rating is missing
+                    user_values.append(rating_dict.get(track_id, np.nan))
+
+                ax.plot(
+                    song_labels,
+                    user_values,
+                    marker="o",
+                    linestyle="-",
+                    label=username,
+                )
+
+            ax.set_ylim(1, 5)
+            ax.set_yticks([1, 2, 3, 4, 5])
+            ax.set_xlabel("Song in quick evaluation")
+            ax.set_ylabel("Rating (1 = dislike, 5 = love)")
+            ax.set_title("Ratings per song for each rater")
+            ax.legend(title="Rater", bbox_to_anchor=(1.05, 1), loc="upper left")
+            fig.tight_layout()
 
             st.pyplot(fig)
     else:
-        st.info("No ratings available to show a distribution yet.")
+        st.info("No quick evaluation songs available to show a rating chart yet.")
+
             
 
     if st.button("🔁 Start over", use_container_width=True):
