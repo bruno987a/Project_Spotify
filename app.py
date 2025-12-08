@@ -746,6 +746,52 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
             fig.tight_layout()
 
             st.pyplot(fig)
+            # ---------- 2) BAR CHART: average rating per song ----------
+            # Compute average rating for each song across all users
+            avg_values = []
+            avg_labels = []
+
+            for i, row in songs_df.iterrows():
+                track_id = row["track_id"]
+                song_ratings = []
+
+                for username in st.session_state.rater_names:
+                    rating_dict = st.session_state.ratings.get(username, {})
+                    val = rating_dict.get(track_id, np.nan)
+                    if not np.isnan(val):
+                        song_ratings.append(val)
+
+                if song_ratings:
+                    avg = float(np.mean(song_ratings))
+                    avg_values.append(avg)
+                    avg_labels.append(f"Song {i+1}")
+
+            if avg_values:
+                y_pos = np.arange(len(avg_labels))
+
+                fig2, ax2 = plt.subplots(figsize=(6, 3.5))
+                bars = ax2.barh(y_pos, avg_values)
+
+                ax2.set_xlim(1, 5)  # ratings from 1 to 5
+                ax2.set_xticks([1, 2, 3, 4, 5])
+                ax2.set_yticks(y_pos)
+                ax2.set_yticklabels(avg_labels)
+                ax2.set_xlabel("Average rating (1 = dislike, 5 = love)")
+                ax2.set_ylabel("Song")
+                ax2.set_title("Average rating per song")
+                ax2.grid(True, axis="x", linestyle="--", alpha=0.3)
+
+                # Put the numeric value at the end of each bar
+                for i, v in enumerate(avg_values):
+                    ax2.text(
+                        v + 0.05,       # a bit to the right of bar end
+                        i,
+                        f"{v:.2f}",     # e.g. 3.67
+                        va="center",
+                    )
+
+                fig2.tight_layout()
+                st.pyplot(fig2)
 
     else:
         st.info("No quick evaluation songs available to show a rating chart yet.")
