@@ -558,31 +558,27 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                         rating_dict = st.session_state.ratings.get(name, {})                # Retrieve this user's rating
                         
                         max_r = max(                                                        # retrieve the maximum number of points given by each user
-                            rating_dict.get(row["track_id"], 1)
-                            for _, row in songs_df.iterrows()
+                            rating_dict.get(t_id, 1) for t_id in track_ids
                         )
-                        # sum all 'unhappy' users into the following counter, if maximum rating is below 3
-                        if max_r < 3:
+                        
+                        if max_r < 3:                                                       # sum all 'unhappy' users into the following counter, if maximum rating is below 3
                             unhappy_count += 1
 
+                    # if more than half of the users are unhappy with the randomized song selection, rerun the whole process:
                     if unhappy_count > num_raters / 2:
-                        # if more than half of the users are unhappy with the randomized song selection, rerun the whole process
                         st.warning(
-                            "Mehr als die Hälfte der Gruppe hat alle Songs unter 3★ bewertet. "
-                            "Es wird ein neuer Vorschlag von Songs generiert, den alle erneut bewerten."
+                            "Over half of the group have rated all Songs below 3 Points."
+                            "A new Song suggestions will be created and available for rating."
                         )
 
-                        # reset all the ratings for repeated process
-                        st.session_state.ratings = {name: {} for name in rater_names}
+                        st.session_state.ratings = {name: {} for name in rater_names}       # reset all the ratings before repeating process
 
-                        # discard previously selected songs for selection process
-                        if "candidate_songs" in st.session_state:
+                        if "candidate_songs" in st.session_state:                           # discard previously selected songs for new selection process
                             del st.session_state.candidate_songs
 
-                        # Start over with Step 3 and Rater (user) 1
-                        st.session_state.active_rater_idx = 0
-                        st.session_state.evaluation_done = False
-                        st.session_state.step = 3
+                        st.session_state.active_rater_idx = 0                               # Start over with Rater (user) 1
+                        st.session_state.evaluation_done = False                            # mark evaluation as unfinished
+                        st.session_state.step = 3                                           # return to quick evaluation Step 3
 
                         st.rerun()
 
