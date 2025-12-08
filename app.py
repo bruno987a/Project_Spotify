@@ -697,7 +697,7 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
         songs_df = st.session_state.candidate_songs.reset_index(drop=True)
 
         # X-axis labels: Song1, Song2, ...
-        song_labels = [f"Song {i+1}" for i in range(len(songs_df))]
+        song_labels = [f"Music {i+1}" for i in range(len(songs_df))]
 
         with st.expander("📊 Show rating distribution per song and user"):
             st.write(
@@ -728,8 +728,8 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
 
             ax.set_ylim(1, 5)
             ax.set_yticks([1, 2, 3, 4, 5])
-            ax.set_xlabel("Song in quick evaluation")
-            ax.set_ylabel("Rating (1 = dislike, 5 = love)")
+            ax.set_xlabel("Music in quick evaluation")
+            ax.set_ylabel("Rating ")
             ax.set_title("Ratings per song for each rater")
             ax.legend(title="Rater", bbox_to_anchor=(1.05, 1), loc="upper left")
             fig.tight_layout()
