@@ -545,36 +545,37 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                 # allow generation for last rater
                 if st.button("🎉 Generate final playlist", type="primary", use_container_width=True):
 
-                    # 1) Gruppenzufriedenheit prüfen
+                    # check for group satisfaction with suggested songs
                     rater_names = st.session_state.rater_names
                     num_raters = len(rater_names)
 
                     unhappy_count = 0
                     for name in rater_names:
                         rating_dict = st.session_state.ratings.get(name, {})
-                        # max Rating dieses Users für die aktuellen Kandidaten
+                        # retrieve the maximum number of points given by each user
                         max_r = max(
                             rating_dict.get(row["track_id"], 1)
                             for _, row in songs_df.iterrows()
                         )
+                        # sum all 'unhappy' users into the following counter, if maximum rating is below 3
                         if max_r < 3:
                             unhappy_count += 1
 
                     if unhappy_count > num_raters / 2:
-                        # Mehr als die Hälfte findet das Set schlecht -> alles neu
+                        # if more than half of the users are unhappy with the randomized song selection, rerun the whole process
                         st.warning(
                             "Mehr als die Hälfte der Gruppe hat alle Songs unter 3★ bewertet. "
                             "Es wird ein neuer Vorschlag von Songs generiert, den alle erneut bewerten."
                         )
 
-                        # Ratings komplett zurücksetzen
+                        # reset all the ratings for repeated process
                         st.session_state.ratings = {name: {} for name in rater_names}
 
-                        # Kandidaten-Songs verwerfen, damit im nächsten Run neu gezogen wird
+                        # discard previously selected songs for selection process
                         if "candidate_songs" in st.session_state:
                             del st.session_state.candidate_songs
 
-                        # Zurück zu Rater 1 und Step 3
+                        # Start over with Step 3 and Rater (user) 1
                         st.session_state.active_rater_idx = 0
                         st.session_state.evaluation_done = False
                         st.session_state.step = 3
