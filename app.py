@@ -566,11 +566,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
 
                     # if more than half of the users are unhappy with the randomized song selection, rerun the whole process:
                     if unhappy_count > num_raters / 2:
-                        st.warning(
-                            "Over half of the group have rated all Songs below 3 Points."
-                            "A new Song suggestions will be created and available for rating."
-                        )
-
+                        
                         st.session_state.ratings = {name: {} for name in rater_names}       # reset all the ratings before repeating process
 
                         if "candidate_songs" in st.session_state:                           # discard previously selected songs for new selection process
