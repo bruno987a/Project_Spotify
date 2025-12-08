@@ -19,7 +19,6 @@ candidate_songs = []
 # Set up connection to database for the project
 # ---------------------------------------------
 
-
 DATA_DIR = Path("data")                                             # Set up pathway to data folder
 
 def get_conn():                                                     # Define get function to connect with sqlite3
@@ -548,7 +547,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                 # allow generation for last rater
                 if st.button("🎉 Generate final playlist", type="primary", use_container_width=True):
 
-                    # check for group satisfaction with suggested songs
+                    # ==== Implement a check if at least half the group is happy with the suggested songs ====
                     rater_names = st.session_state.rater_names
                     num_raters = len(rater_names)
 
