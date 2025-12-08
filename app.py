@@ -772,7 +772,7 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
                 if song_ratings:
                     avg = float(np.mean(song_ratings))
                     avg_values.append(avg)
-                    avg_labels.append(f"Song {i+1}")
+                    avg_labels.append(f"{i+1}")
 
             if avg_values:
                 y_pos = np.arange(len(avg_labels))
@@ -784,7 +784,7 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
                 ax2.set_xticks([1, 2, 3, 4, 5])
                 ax2.set_yticks(y_pos)
                 ax2.set_yticklabels(avg_labels)
-                ax2.set_xlabel("Average rating (1 = dislike, 5 = love)")
+                ax2.set_xlabel("Average rating")
                 ax2.set_ylabel("Song")
                 ax2.set_title("Average rating per song")
                 ax2.grid(True, axis="x", linestyle="--", alpha=0.3)
