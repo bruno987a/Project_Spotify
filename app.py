@@ -1,9 +1,13 @@
-import streamlit as st
+# ----------------------------
+# Set up all important imports
+# ----------------------------
+
+from pathlib import Path
 import sqlite3
+import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from pathlib import Path
 from sklearn.neighbors import NearestNeighbors  # Machine Learning algorithm
 from sklearn.preprocessing import StandardScaler
 from ast import literal_eval
