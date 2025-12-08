@@ -15,6 +15,10 @@ from random import choice
 
 candidate_songs = []
 
+# ---------------------------------------------
+# Set up connection to database for the project
+# ---------------------------------------------
+
 
 DATA_DIR = Path("data")                                             # Set up pathway to data folder
 
