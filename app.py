@@ -696,6 +696,9 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
         # ---------------------------------------------
     # Simple visualization: per-song ratings by user
     # ---------------------------------------------
+        # ---------------------------------------------
+    # Simple visualization: per-song ratings by user
+    # ---------------------------------------------
     if "candidate_songs" in st.session_state and st.session_state.ratings:
         songs_df = st.session_state.candidate_songs.reset_index(drop=True)
 
@@ -705,41 +708,23 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
 
         with st.expander("📊 Show rating distribution per song and user"):
             st.write(
-                "This chart shows, for each of the quick evaluation songs "
-                "(Song 1–5), how each rater scored them. Each line is one user."
+                "This line chart shows how each user rated each of the quick-evaluation songs."
             )
 
-            # Optional: show a small table of used ratings for debugging
-            debug_rows = []
-            for username in st.session_state.rater_names:
-                rating_dict = st.session_state.ratings.get(username, {})
-                row_vals = []
-                for _, row in songs_df.iterrows():
-                    track_id = row["track_id"]
-                    row_vals.append(rating_dict.get(track_id, None))
-                debug_rows.append([username] + row_vals)
-
-            debug_cols = ["User"] + song_labels
-            debug_df = pd.DataFrame(debug_rows, columns=debug_cols)
-            st.caption("Ratings used in the chart:")
-            st.dataframe(debug_df, use_container_width=True, height=200)
-
-            # Line plot
             fig, ax = plt.subplots(figsize=(6, 3.5))
 
             for username in st.session_state.rater_names:
                 rating_dict = st.session_state.ratings.get(username, {})
                 user_values = []
 
-                # Keep same song order as in quick evaluation
+                # Collect ratings in the same order as songs_df
                 for _, row in songs_df.iterrows():
                     track_id = row["track_id"]
-                    # If for some reason a rating is missing, store np.nan
                     user_values.append(rating_dict.get(track_id, np.nan))
 
                 user_values = np.array(user_values, dtype=float)
 
-                # If this user has no valid ratings, skip plotting them
+                # If user has no valid ratings, skip them
                 if np.all(np.isnan(user_values)):
                     continue
 
@@ -751,23 +736,25 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
                     label=username,
                 )
 
-            ax.set_xlim(1, len(songs_df))          # x starts at 1
-            ax.set_ylim(1, 5)                      # y from 1 to 5
+            # Axis formatting
+            ax.set_xlim(1, len(songs_df))
+            ax.set_ylim(1, 5)
             ax.set_xticks(x_positions)
             ax.set_xticklabels(song_labels)
             ax.set_yticks([1, 2, 3, 4, 5])
-
             ax.set_xlabel("Song in quick evaluation")
             ax.set_ylabel("Rating (1 = dislike, 5 = love)")
             ax.set_title("Ratings per song for each rater")
-            ax.grid(True, which="both", linestyle="--", alpha=0.3)
 
+            ax.grid(True, linestyle="--", alpha=0.3)
             ax.legend(title="Rater", bbox_to_anchor=(1.05, 1), loc="upper left")
             fig.tight_layout()
 
             st.pyplot(fig)
+
     else:
         st.info("No quick evaluation songs available to show a rating chart yet.")
+
 
 
 
