@@ -615,15 +615,13 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                         def weight_adjustment(points: int) -> float:                                # define function to weaken/ enhance song features of less/ more liked songs
                             return (points / 3.0) ** 2                                              # Significantly weakens songs with rating of below 3, keeps 3 neutral, and enhances more liked ones
                         
-                        # set up empty list and append each user's vector
-                        user_profiles = []
-                        for _, rating_dict in st.session_state.ratings.items():
-                            if not rating_dict:
+                        user_profiles = []                                                          # set up empty list and append each user's vector
+                        for _, rating_dict in st.session_state.ratings.items():                     # iterate over each users ratings
+                            if not rating_dict:                                                     # Skip user in case rating wasn't completed
                                 continue
 
-                            rated_ids = [t_id for t_id in rating_dict.keys() if t_id in features_14_scaled.index]
-                            if not rated_ids:
-                                continue
+                            rated_ids = [t_id for t_id in rating_dict.keys()                        # all track IDs of the rated songs
+                                         if t_id in features_14_scaled.index]                       # ...if they exist in the feature table
 
                             ratings_list = [weight_adjustment(rating_dict[t_id]) for t_id in rated_ids]
                             user_profiles.append(build_user_profile(ratings_list, rated_ids, features_14_scaled))
