@@ -607,27 +607,25 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                         X_14 = scaler.fit_transform(features_14)
                         features_14_scaled = pd.DataFrame(X_14, index=features.index, columns=feature_cols)
                         
-                        # define function to create weighted vectors for each user's preferences
-                        def build_user_profile(ratings_list, rated_ids, features_df):
-                            ratings = np.asarray(ratings_list, dtype=float)
-                            vecs = features_df.loc[rated_ids].values
-                            return np.average(vecs, axis=0, weights=ratings)
+                        def build_user_profile(ratings_list, rated_ids, features_df):               # define function to create weighted vectors for each user's preferences
+                            ratings = np.asarray(ratings_list, dtype=float)                         # Convert list of ratings to Numpy array
+                            vecs = features_df.loc[rated_ids].values                                # Get the feature rows of the rated songs
+                            return np.average(vecs, axis=0, weights=ratings)                        # Compute the weighted average to receive one user's vector
                         
-                        # define function to weaken/ enhance song features of less/ more liked songs
-                        def weight_adjustment(points: int) -> float:
-                            return (points / 3.0) ** 2
+                        def weight_adjustment(points: int) -> float:                                # define function to weaken/ enhance song features of less/ more liked songs
+                            return (points / 3.0) ** 2                                              # Significantly weakens songs with rating of below 3, keeps 3 neutral, and enhances more liked ones
                         
                         # set up empty list and append each user's vector
                         user_profiles = []
-                        for username, rating_dict in st.session_state.ratings.items():
+                        for _, rating_dict in st.session_state.ratings.items():
                             if not rating_dict:
                                 continue
 
-                            rated_ids = [tid for tid in rating_dict.keys() if tid in features_14_scaled.index]
+                            rated_ids = [t_id for t_id in rating_dict.keys() if t_id in features_14_scaled.index]
                             if not rated_ids:
                                 continue
 
-                            ratings_list = [weight_adjustment(rating_dict[tid]) for tid in rated_ids]
+                            ratings_list = [weight_adjustment(rating_dict[t_id]) for t_id in rated_ids]
                             user_profiles.append(build_user_profile(ratings_list, rated_ids, features_14_scaled))
 
                         if len(user_profiles) == 0:
