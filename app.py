@@ -11,17 +11,13 @@ from random import choice
 
 candidate_songs = []
 
-# Set up pathways to data folder
-BASE_DIR = Path(__file__).resolve().parent
-DATA_DIR = BASE_DIR / "data"
 
+DATA_DIR = Path("data")                                             # Set up pathway to data folder
 
-# Set up SQLite connection to database as DB
-def get_conn():
+def get_conn():                                                     # Define get function to connect with sqlite3
     return sqlite3.connect(DATA_DIR / "app.db")
 
-
-DB = get_conn()
+DB = get_conn()                                                     # assign the database to the variable DB
 
 st.set_page_config(
     page_title="Smart Playlist Generator",
