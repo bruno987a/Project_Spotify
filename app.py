@@ -743,11 +743,11 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
             ax.set_xticklabels(song_labels)
             ax.set_yticks([1, 2, 3, 4, 5])
             ax.set_xlabel("Song in quick evaluation")
-            ax.set_ylabel("Rating (1 = dislike, 5 = love)")
+            ax.set_ylabel("Rating")
             ax.set_title("Ratings per song for each rater")
 
             ax.grid(True, linestyle="--", alpha=0.3)
-            ax.legend(title="Rater", bbox_to_anchor=(1.05, 1), loc="upper left")
+            ax.legend(title="Rater:", bbox_to_anchor=(1.05, 1), loc="upper left")
             fig.tight_layout()
 
             st.pyplot(fig)
