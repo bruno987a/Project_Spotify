@@ -623,26 +623,25 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                             rated_ids = [t_id for t_id in rating_dict.keys()                        # all track IDs of the rated songs
                                          if t_id in features_14_scaled.index]                       # ...if they exist in the feature table
 
-                            ratings_list = [weight_adjustment(rating_dict[t_id]) for t_id in rated_ids]
-                            user_profiles.append(build_user_profile(ratings_list, rated_ids, features_14_scaled))
+                            ratings_list = [weight_adjustment(rating_dict[t_id])                    # adjusted list of ratings with non-linear weaking / enhancement
+                                            for t_id in rated_ids]
+                            user_profiles.append(                                                   # Calculate vector to represent one user's taste
+                                build_user_profile(ratings_list, rated_ids, features_14_scaled)
+                            )
 
-                        if len(user_profiles) == 0:
-                            st.error("There are no usable ratings - no recommendation possible.")
-                            st.stop()
+                        group_vector = np.mean(user_profiles, axis=0)                               # Derive group vector from average of all individual vectors
 
-                        group_vector = np.mean(user_profiles, axis=0)
+                        X = features_14_scaled.values                                               # convert features to Numpy values
+                        track_ids = features_14_scaled.index.to_numpy()                             # save their corresponding IDs
 
-                        X = features_14_scaled.values
-                        track_ids = features_14_scaled.index.to_numpy()
+                        knn_model = NearestNeighbors(metric="cosine", n_neighbors=200)              # kNN model with cosine similarity
+                        knn_model.fit(X)                                                            # load the song features into the model
 
-                        knn_model = NearestNeighbors(metric="cosine", n_neighbors=200)
-                        knn_model.fit(X)
-
-                        def recommend(group_vec, n_songs):
+                        def recommend(group_vec, n_songs):                                          # define function for song recommendation
                             _, nn_idx = knn_model.kneighbors(group_vec.reshape(1, -1), n_neighbors=n_songs)
                             return track_ids[nn_idx[0]]
 
-                        recommended_ids = recommend(group_vector, st.session_state.n_desired_songs).tolist()
+                        recommended_ids = recommend(group_vector, st.session_state.n_desired_songs).tolist()    # Call function and assign to easy variable for final display
 
                         # store for step 4
                         st.session_state.recommended_ids = recommended_ids
