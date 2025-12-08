@@ -434,6 +434,12 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
 
         st.markdown("### Quick song evaluation")
 
+        if st.session_state.get("new_song_batch", False):
+            st.info(
+            "A new set of song suggestions was generated because the group was unsatisfied with the previous ones."
+            )
+            st.session_state.new_song_batch = False
+
         if st.session_state.num_raters > 1:
             st.caption(
                 "Everyone rates a handful of songs. We’ll learn what the whole group likes and dislikes."
@@ -575,6 +581,8 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                         st.session_state.active_rater_idx = 0                               # Start over with Rater (user) 1
                         st.session_state.evaluation_done = False                            # mark evaluation as unfinished
                         st.session_state.step = 3                                           # return to quick evaluation Step 3
+
+                        st.session_state.new_song_batch = True                              # Show info message in repeated selection round
 
                         st.rerun()
 
