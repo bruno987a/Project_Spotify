@@ -545,76 +545,114 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                 # allow generation for last rater
                 if st.button("🎉 Generate final playlist", type="primary", use_container_width=True):
 
-                    # ------------------------------
-                    # START MACHINE LEARNING PART 
-                    # ------------------------------
-                    features = pd.read_csv(DATA_DIR / "reduced_features.csv", index_col=0)
+                    # 1) Gruppenzufriedenheit prüfen
+                    rater_names = st.session_state.rater_names
+                    num_raters = len(rater_names)
 
-                    feature_cols = [
-                        "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
-                        "mfcc_06_mean", "mfcc_07_mean", "mfcc_08_mean", "mfcc_09_mean", "mfcc_10_mean",
-                        "rmse_01_mean",
-                        "spectral_centroid_01_mean",
-                        "spectral_bandwidth_01_mean",
-                        "chroma_var"
-                    ]
-                    features_14 = features[feature_cols].copy()
+                    unhappy_count = 0
+                    for name in rater_names:
+                        rating_dict = st.session_state.ratings.get(name, {})
+                        # max Rating dieses Users für die aktuellen Kandidaten
+                        max_r = max(
+                            rating_dict.get(row["track_id"], 1)
+                            for _, row in songs_df.iterrows()
+                        )
+                        if max_r < 3:
+                            unhappy_count += 1
 
-                    scaler = StandardScaler()
-                    X_14 = scaler.fit_transform(features_14)
-                    features_14_scaled = pd.DataFrame(X_14, index=features.index, columns=feature_cols)
-                    
-                    # define function to create weighted vectors for each user's preferences
-                    def build_user_profile(ratings_list, rated_ids, features_df):
-                        ratings = np.asarray(ratings_list, dtype=float)
-                        vecs = features_df.loc[rated_ids].values
-                        return np.average(vecs, axis=0, weights=ratings)
-                    
-                    # define function to weaken/ enhance song features of less/ more liked songs
-                    def weight_adjustment(points: int) -> float:
-                        return (points / 3.0) ** 2
-                    
-                    # set up empty list and append each user's vector
-                    user_profiles = []
-                    for username, rating_dict in st.session_state.ratings.items():
-                        if not rating_dict:
-                            continue
+                    if unhappy_count > num_raters / 2:
+                        # Mehr als die Hälfte findet das Set schlecht -> alles neu
+                        st.warning(
+                            "Mehr als die Hälfte der Gruppe hat alle Songs unter 3★ bewertet. "
+                            "Es wird ein neuer Vorschlag von Songs generiert, den alle erneut bewerten."
+                        )
 
-                        rated_ids = [tid for tid in rating_dict.keys() if tid in features_14_scaled.index]
-                        if not rated_ids:
-                            continue
+                        # Ratings komplett zurücksetzen
+                        st.session_state.ratings = {name: {} for name in rater_names}
 
-                        ratings_list = [weight_adjustment(rating_dict[tid]) for tid in rated_ids]
-                        user_profiles.append(build_user_profile(ratings_list, rated_ids, features_14_scaled))
+                        # Kandidaten-Songs verwerfen, damit im nächsten Run neu gezogen wird
+                        if "candidate_songs" in st.session_state:
+                            del st.session_state.candidate_songs
 
-                    if len(user_profiles) == 0:
-                        st.error("There are no usable ratings - no recommendation possible.")
-                        st.stop()
+                        # Zurück zu Rater 1 und Step 3
+                        st.session_state.active_rater_idx = 0
+                        st.session_state.evaluation_done = False
+                        st.session_state.step = 3
 
-                    group_vector = np.mean(user_profiles, axis=0)
+                        st.rerun()
 
-                    X = features_14_scaled.values
-                    track_ids = features_14_scaled.index.to_numpy()
+                    else:
 
-                    knn_model = NearestNeighbors(metric="cosine", n_neighbors=200)
-                    knn_model.fit(X)
+                        # ------------------------------
+                        # START MACHINE LEARNING PART 
+                        # ------------------------------
+                        features = pd.read_csv(DATA_DIR / "reduced_features.csv", index_col=0)
 
-                    def recommend(group_vec, n_songs):
-                        _, nn_idx = knn_model.kneighbors(group_vec.reshape(1, -1), n_neighbors=n_songs)
-                        return track_ids[nn_idx[0]]
+                        feature_cols = [
+                            "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
+                            "mfcc_06_mean", "mfcc_07_mean", "mfcc_08_mean", "mfcc_09_mean", "mfcc_10_mean",
+                            "rmse_01_mean",
+                            "spectral_centroid_01_mean",
+                            "spectral_bandwidth_01_mean",
+                            "chroma_var"
+                        ]
+                        features_14 = features[feature_cols].copy()
 
-                    recommended_ids = recommend(group_vector, st.session_state.n_desired_songs).tolist()
+                        scaler = StandardScaler()
+                        X_14 = scaler.fit_transform(features_14)
+                        features_14_scaled = pd.DataFrame(X_14, index=features.index, columns=feature_cols)
+                        
+                        # define function to create weighted vectors for each user's preferences
+                        def build_user_profile(ratings_list, rated_ids, features_df):
+                            ratings = np.asarray(ratings_list, dtype=float)
+                            vecs = features_df.loc[rated_ids].values
+                            return np.average(vecs, axis=0, weights=ratings)
+                        
+                        # define function to weaken/ enhance song features of less/ more liked songs
+                        def weight_adjustment(points: int) -> float:
+                            return (points / 3.0) ** 2
+                        
+                        # set up empty list and append each user's vector
+                        user_profiles = []
+                        for username, rating_dict in st.session_state.ratings.items():
+                            if not rating_dict:
+                                continue
 
-                    # store for step 4
-                    st.session_state.recommended_ids = recommended_ids
-                    st.session_state.evaluation_done = True
-                    st.session_state.step = 4
+                            rated_ids = [tid for tid in rating_dict.keys() if tid in features_14_scaled.index]
+                            if not rated_ids:
+                                continue
 
-                    # 🔹 tell next run to show success message on the final page
-                    st.session_state.final_success_message = True
+                            ratings_list = [weight_adjustment(rating_dict[tid]) for tid in rated_ids]
+                            user_profiles.append(build_user_profile(ratings_list, rated_ids, features_14_scaled))
 
-                    # 🔹 force rerun so sidebar + final playlist update immediately
-                    st.rerun() 
+                        if len(user_profiles) == 0:
+                            st.error("There are no usable ratings - no recommendation possible.")
+                            st.stop()
+
+                        group_vector = np.mean(user_profiles, axis=0)
+
+                        X = features_14_scaled.values
+                        track_ids = features_14_scaled.index.to_numpy()
+
+                        knn_model = NearestNeighbors(metric="cosine", n_neighbors=200)
+                        knn_model.fit(X)
+
+                        def recommend(group_vec, n_songs):
+                            _, nn_idx = knn_model.kneighbors(group_vec.reshape(1, -1), n_neighbors=n_songs)
+                            return track_ids[nn_idx[0]]
+
+                        recommended_ids = recommend(group_vector, st.session_state.n_desired_songs).tolist()
+
+                        # store for step 4
+                        st.session_state.recommended_ids = recommended_ids
+                        st.session_state.evaluation_done = True
+                        st.session_state.step = 4
+
+                        # 🔹 tell next run to show success message on the final page
+                        st.session_state.final_success_message = True
+
+                        # 🔹 force rerun so sidebar + final playlist update immediately
+                        st.rerun() 
 
 # -------------------------
 # STEP 3 — Final Playlist 
