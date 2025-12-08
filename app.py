@@ -2,10 +2,9 @@ import streamlit as st
 import sqlite3
 import pandas as pd
 import numpy as np
-import random
 import matplotlib.pyplot as plt
 from pathlib import Path
-from sklearn.neighbors import NearestNeighbors  # Machine Learning algorithm @Lorenz
+from sklearn.neighbors import NearestNeighbors  # Machine Learning algorithm
 from sklearn.preprocessing import StandardScaler
 from ast import literal_eval
 from random import choice
