@@ -728,7 +728,7 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
 
             # Axis formatting
             ax.set_xlim(1, len(songs_df))
-            ax.set_ylim(1, 5)
+            ax.set_ylim(0, 5)
             ax.set_xticks(x_positions)
             ax.set_xticklabels(song_labels)
             ax.set_yticks([1, 2, 3, 4, 5])
