@@ -780,7 +780,7 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
                     color=[bar_colors[i % len(bar_colors)] for i in range(len(avg_labels))]
                 )
 
-                ax2.set_xlim(1, 5)  # ratings from 1 to 5
+                ax2.set_xlim(0, 5)  # ratings from 1 to 5
                 ax2.set_xticks([1, 2, 3, 4, 5])
                 ax2.set_yticks(y_pos)
                 ax2.set_yticklabels(avg_labels)
