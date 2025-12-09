@@ -34,7 +34,7 @@ st.set_page_config(
 )
 
 # -------------------------
-# Global Styles (design de Code 1)
+# Global Styles 
 # -------------------------
 st.markdown(
     """
@@ -685,19 +685,10 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
             df_final_display,
             use_container_width=True
         )
-            # ---------------------------------------------
+    # ---------------------------------------------
     # Simple visualization: distribution of ratings
     # ---------------------------------------------
-    # Collect all ratings from all users
-        # ---------------------------------------------
-    # Simple visualization: per-song ratings by user
-    # ---------------------------------------------
-        # ---------------------------------------------
-    # Simple visualization: per-song ratings by user
-    # ---------------------------------------------
-        # ---------------------------------------------
-    # Simple visualization: per-song ratings by user
-    # ---------------------------------------------
+    
     if "candidate_songs" in st.session_state and st.session_state.ratings:
         songs_df = st.session_state.candidate_songs.reset_index(drop=True)
 
@@ -773,8 +764,21 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
             if avg_values:
                 y_pos = np.arange(len(avg_labels))
 
+                # ✨ Define 5 colors (you can change these hex codes as you like)
+                bar_colors = [
+                    "#6366F1",  # indigo
+                    "#22C55E",  # green
+                    "#F97316",  # orange
+                    "#EC4899",  # pink
+                    "#14B8A6",  # teal
+                ]
+
                 fig2, ax2 = plt.subplots(figsize=(6, 3.5))
-                bars = ax2.barh(y_pos, avg_values)
+                bars = ax2.barh(
+                    y_pos,
+                    avg_values,
+                    color=[bar_colors[i % len(bar_colors)] for i in range(len(avg_labels))]
+                )
 
                 ax2.set_xlim(1, 5)  # ratings from 1 to 5
                 ax2.set_xticks([1, 2, 3, 4, 5])
@@ -796,6 +800,7 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
 
                 fig2.tight_layout()
                 st.pyplot(fig2)
+
 
     else:
         st.info("No quick evaluation songs available to show a rating chart yet.")
