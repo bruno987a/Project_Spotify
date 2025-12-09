@@ -591,7 +591,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                         # ------------------------------
                         # START MACHINE LEARNING PART 
                         # ------------------------------
-                        features = pd.read_csv(DATA_DIR / "reduced_features.csv", index_col=0)
+                        features = pd.read_sql("SELECT * FROM features", DB, index_col=track_id)
 
                         feature_cols = [
                             "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
