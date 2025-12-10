@@ -19,10 +19,8 @@ candidate_songs = []
 # Set up connection to database for the project
 # ---------------------------------------------
 
-DATA_DIR = Path("data")                                             # Set up pathway to data folder
-
 def get_conn():                                                     # Define get function to connect with sqlite3
-    return sqlite3.connect(DATA_DIR / "app.db")
+    return sqlite3.connect(data / "app.db")
 
 DB = get_conn()                                                     # assign the database to the variable DB
 
@@ -332,18 +330,9 @@ if st.session_state.step >= 2:
         # BEFORE confirming → show full criteria form
         if st.session_state.step == 2:
 
-            col1, col2 = st.columns(2)
+            col1 = st.columns(1)
 
             with col1:
-                similarity_raw = st.selectbox(
-                    "Similarity level",
-                    ["Genre", "Artist", "Mixed"],
-                    index=None,                     
-                    placeholder="Choose an option", 
-                    key="similarity_raw",
-                )
-
-            with col2:
                 genre_map = {
                     "Rock/Metal/Punk": 1, "Pop/Synth": 2, "Electronic/IDM": 3,
                     "Hip-Hop/RnB": 4, "Jazz/Blues": 5, "Classical": 6,
@@ -409,14 +398,12 @@ if st.session_state.step >= 2:
                 11: "Funk"
             }
 
-            similarity_value = st.session_state.get("similarity", "None")
             chosen_genre_id = st.session_state.get("chosen_genre")
             chosen_genre_name = reverse_genre_map.get(chosen_genre_id, "Unknown")
 
             st.info(
                 f"""
 **Criteria selected:**  
-• Similarity level: **{similarity_value}**  
 • Genre: **{chosen_genre_name}**  
 • Desired playlist length: **{st.session_state.n_desired_songs} songs**
 """
@@ -462,26 +449,26 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
 
         # ===== Data loading for candidate songs =====
 
-    gmi = pd.read_sql_query("SELECT * FROM genre_with_main_identity", DB)                                     #reading in the list with all subgenres linked with the main genres
-    s_genres = gmi[["genre_id", "main_category_id"]]                                                          #filtering out the needed genre column
-
-    t = pd.read_sql_query("SELECT * FROM tracks_small", DB)                                                   #importing the table with the tracks
-    s_t = pd.DataFrame({                                                                                      #clean out the table whilst implementing it as a dataframe 
-        "track_id": t["track_id"],
-        "genres_all": t["genres_all"].fillna("[]").apply(literal_eval),                                       #we're safely changing the Genre numbers from type string to int format, empty ones would be transfered to []
-        "title": t["title"],
-        "artist": t["artist"]
-    })
-
-    def rand_track_genre(main_cat_id, n):                                                                     #implementing the function giving out random songs, with input of number of songs to rate (n) and the chosen main genre (main_cat_id) 
-        genre_ids = list(set(s_genres.loc[s_genres["main_category_id"] == main_cat_id, "genre_id"]))          #constructing a list with all sub genres matching the chosen genre
-        rand_gen_l = [choice(genre_ids) for _ in range(n)]                                                    #creating a list with n randomly chosen sub genres out the just created list
-
-        p_to_rate = []
-        for g_id in rand_gen_l:                                                                               #for every randomly chosen sub genre we choose one song that has this sub genre in the following lines
-            poss_songs = s_t[s_t["genres_all"].apply(lambda ids: g_id in ids)]                                #we create a list of songs with the current sub genre g_id
-            p_to_rate.append(poss_songs.sample(1))                                                            #one of the songs gets randomly chosen from this list and appended to the list of songs that will be displayed for rating
-        return pd.concat(p_to_rate, ignore_index=True)                                                        #returning the created randomized selection of songs
+        gmi = pd.read_sql_query("SELECT * FROM genre_with_main_identity", DB)                                     #reading in the list with all subgenres linked with the main genres
+        s_genres = gmi[["genre_id", "main_category_id"]]                                                          #filtering out the needed genre column
+    
+        t = pd.read_sql_query("SELECT * FROM tracks_small", DB)                                                   #importing the table with the tracks
+        s_t = pd.DataFrame({                                                                                      #clean out the table whilst implementing it as a dataframe 
+            "track_id": t["track_id"],
+            "genres_all": t["genres_all"].fillna("[]").apply(literal_eval),                                       #we're safely changing the Genre numbers from type string to int format, empty ones would be transfered to []
+            "title": t["title"],
+            "artist": t["artist"]
+        })
+    
+        def rand_track_genre(main_cat_id, n):                                                                     #implementing the function giving out random songs, with input of number of songs to rate (n) and the chosen main genre (main_cat_id) 
+            genre_ids = list(set(s_genres.loc[s_genres["main_category_id"] == main_cat_id, "genre_id"]))          #constructing a list with all sub genres matching the chosen genre
+            rand_gen_l = [choice(genre_ids) for _ in range(n)]                                                    #creating a list with n randomly chosen sub genres out the just created list
+    
+            p_to_rate = []
+            for g_id in rand_gen_l:                                                                               #for every randomly chosen sub genre we choose one song that has this sub genre in the following lines
+                poss_songs = s_t[s_t["genres_all"].apply(lambda ids: g_id in ids)]                                #we create a list of songs with the current sub genre g_id
+                p_to_rate.append(poss_songs.sample(1))                                                            #one of the songs gets randomly chosen from this list and appended to the list of songs that will be displayed for rating
+            return pd.concat(p_to_rate, ignore_index=True)                                                        #returning the created randomized selection of songs
 
         # Generate candidate songs ONCE for the whole group        
         if "candidate_songs" not in st.session_state:
