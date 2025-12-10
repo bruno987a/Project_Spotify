@@ -328,7 +328,7 @@ if st.session_state.step >= 2:
             col1, = st.columns(1)
 
             with col1:
-                genre_map = {
+                genre_map = {                                                                    #initializing a dictionary with all the genres to choose from
                     "Rock/Metal/Punk": 1, "Pop/Synth": 2, "Electronic/IDM": 3,
                     "Hip-Hop/RnB": 4, "Jazz/Blues": 5, "Classical": 6,
                     "Folk/Country/Americana": 7, "World/Reggae/Latin": 8,
@@ -336,7 +336,7 @@ if st.session_state.step >= 2:
                     "Funk": 11
                 }
 
-                genre_raw = st.selectbox(
+                genre_raw = st.selectbox(                                                       #selectbox for the user to choose the desired genre
                     "Preferred genre",
                     list(genre_map.keys()),
                     index=None,                     
