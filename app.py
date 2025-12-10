@@ -460,8 +460,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
             gen = s_t["genres_all"].apply(lambda ids: any(g in genre_ids for g in ids))                                                  
 
             poss_songs = s_t[gen]
-            n_sample = min(n, len(poss_songs))
-            return poss_songs.sample(n_sample, replace=False).reset_index(drop=True)
+            return poss_songs.sample(n, replace=False).reset_index(drop=True)
 
         # Generate candidate songs ONCE for the whole group        
         if "candidate_songs" not in st.session_state:
