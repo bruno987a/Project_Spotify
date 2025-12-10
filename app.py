@@ -257,7 +257,7 @@ st.markdown(                        #main subtitle
 # --------- Setup (Step 0) ----------
 if st.session_state.step >= 1:
     with st.container():
-        # Invisible marker so the global CSS applies the card style
+        # Marker so the CSS applies to this section
         st.markdown('<div class="step-card"></div>', unsafe_allow_html=True)
 
         st.markdown("### Setup")
@@ -266,11 +266,11 @@ if st.session_state.step >= 1:
         )
 
         # BEFORE "Confirm group" is clicked → show editable inputs
-        if st.session_state.step == 1:
+        if st.session_state.step == 1:            # Only show editable inpouts while we are on step 1
             col1, col2 = st.columns([1, 2])
 
             with col1:
-                num = st.number_input(
+                num = st.number_input(                    # Choose how many Raters (1-10)
                     "Number of raters",
                     min_value=1,
                     max_value=10,
@@ -281,8 +281,8 @@ if st.session_state.step >= 1:
 
             names = []
             with col2:
-                for i in range(int(num)):
-                    default_name = (
+                for i in range(int(num)):                   # Create an name input field for every rater
+                    default_name = (                        # Default names: User X
                         st.session_state.rater_names[i]
                         if i < len(st.session_state.rater_names)
                         else f"User {i+1}"
@@ -295,16 +295,16 @@ if st.session_state.step >= 1:
                         )
                     )
 
-            if st.button("✅ Confirm group & continue", use_container_width=True):
+            if st.button("✅ Confirm group & continue", use_container_width=True):            # Confirm button
                 clean_names = [(n.strip() or f"User {i+1}") for i, n in enumerate(names)]
                 st.session_state.num_raters = int(num)
-                st.session_state.rater_names = clean_names
+                st.session_state.rater_names = clean_names                                    # Clean names: strip whitespace and replace blanks with Names
 
                 # initialize ratings dict per person
-                st.session_state.ratings = {name: {} for name in clean_names}
+                st.session_state.ratings = {name: {} for name in clean_names}                
 
-                st.session_state.active_rater_idx = 0
-                st.session_state.step = 2  # go to criteria step
+                st.session_state.active_rater_idx = 0                                           # Start rating with the first User
+                st.session_state.step = 2                                                       # go to criteria step
 
                 st.rerun()
 
@@ -413,6 +413,7 @@ if st.session_state.step >= 2:
 
 # -------------------------
 # STEP 2 — Quick Evaluation 
+# Each user rates the 5 same songs
 # -------------------------
 if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
     with st.container():
@@ -436,14 +437,14 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
             )
 
         rater_names = st.session_state.rater_names
-        idx_rater = st.session_state.active_rater_idx
+        idx_rater = st.session_state.active_rater_idx                                               # Current rater
         current_user = rater_names[idx_rater]
 
         st.write(f"**Rater {idx_rater + 1} / {len(rater_names)}:** {current_user}")
     
 
         # make sure this user's dict exists
-        st.session_state.ratings.setdefault(current_user, {})
+        st.session_state.ratings.setdefault(current_user, {})                                    
         user_ratings = st.session_state.ratings[current_user]
 
         # ===== Data loading for candidate songs =====
