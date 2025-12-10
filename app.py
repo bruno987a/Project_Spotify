@@ -481,7 +481,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
         for g_id in rand_gen_l:                                                                               #for every randomly chosen sub genre we choose one song that has this sub genre in the following lines
             poss_songs = s_t[s_t["genres_all"].apply(lambda ids: g_id in ids)]                                #we create a list of songs with the current sub genre g_id
             p_to_rate.append(poss_songs.sample(1))                                                            #one of the songs gets randomly chosen from this list and appended to the list of songs that will be displayed for rating
-        return pd.concat(p_to_rate, ignore_index=True)
+        return pd.concat(p_to_rate, ignore_index=True)                                                        #returning the created randomized selection of songs
 
         # Generate candidate songs ONCE for the whole group        
         if "candidate_songs" not in st.session_state:
@@ -551,35 +551,35 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                 if st.button("🎉 Generate final playlist", type="primary", use_container_width=True):
 
                     # ==== Implement a check if at least half the group is happy with the suggested songs ====
-                    rater_names = st.session_state.rater_names                              # List of all raters
-                    num_raters = len(rater_names)                                           # Number of users for average
+                    rater_names = st.session_state.rater_names                                                # List of all raters
+                    num_raters = len(rater_names)                                                             # Number of users for average
 
-                    unhappy_count = 0                                                       # Initialize a count for unhappy users
-                    track_ids = songs_df["track_id"].tolist()                               # List of all track IDs for max ratings
+                    unhappy_count = 0                                                                         # Initialize a count for unhappy users
+                    track_ids = songs_df["track_id"].tolist()                                                 # List of all track IDs for max ratings
                     
-                    for name in rater_names:                                                # Iterate over names of users
-                        rating_dict = st.session_state.ratings.get(name, {})                # Retrieve this user's rating
+                    for name in rater_names:                                                                  # Iterate over names of users
+                        rating_dict = st.session_state.ratings.get(name, {})                                  # Retrieve this user's rating
                         
-                        max_r = max(                                                        # retrieve the maximum number of points given by each user
+                        max_r = max(                                                                          # retrieve the maximum number of points given by each user
                             rating_dict.get(t_id, 1) for t_id in track_ids
                         )
                         
-                        if max_r < 3:                                                       # sum all 'unhappy' users into the following counter, if maximum rating is below 3
+                        if max_r < 3:                                                                        # sum all 'unhappy' users into the following counter, if maximum rating is below 3
                             unhappy_count += 1
 
                     # if more than half of the users are unhappy with the randomized song selection, rerun the whole process:
                     if unhappy_count > num_raters / 2:
                         
-                        st.session_state.ratings = {name: {} for name in rater_names}       # reset all the ratings before repeating process
+                        st.session_state.ratings = {name: {} for name in rater_names}                       # reset all the ratings before repeating process
 
-                        if "candidate_songs" in st.session_state:                           # discard previously selected songs for new selection process
+                        if "candidate_songs" in st.session_state:                                           # discard previously selected songs for new selection process
                             del st.session_state.candidate_songs
 
-                        st.session_state.active_rater_idx = 0                               # Start over with Rater (user) 1
-                        st.session_state.evaluation_done = False                            # mark evaluation as unfinished
-                        st.session_state.step = 3                                           # return to quick evaluation Step 3
+                        st.session_state.active_rater_idx = 0                                              # Start over with Rater (user) 1
+                        st.session_state.evaluation_done = False                                           # mark evaluation as unfinished
+                        st.session_state.step = 3                                                          # return to quick evaluation Step 3
 
-                        st.session_state.new_song_batch = True                              # Show info message in repeated selection round
+                        st.session_state.new_song_batch = True                                             # Show info message in repeated selection round
 
                         st.rerun()
 
