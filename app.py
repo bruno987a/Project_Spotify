@@ -2,7 +2,6 @@
 # Set up all important imports
 # ----------------------------
 
-from pathlib import Path
 import sqlite3
 import streamlit as st
 import pandas as pd
@@ -11,8 +10,6 @@ import matplotlib.pyplot as plt
 from sklearn.neighbors import NearestNeighbors  # Machine Learning algorithm
 from sklearn.preprocessing import StandardScaler
 from ast import literal_eval
-
-candidate_songs = []
 
 # ---------------------------------------------
 # Set up connection to database for the project
@@ -163,7 +160,6 @@ st.markdown(
         box-shadow: none !important;
     }
     
-    /
     </style>
     """,
     unsafe_allow_html=True,         #tells Streamlit it’s okay to render this HTML/CSS.
