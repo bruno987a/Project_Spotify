@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 from sklearn.neighbors import NearestNeighbors  # Machine Learning algorithm
 from sklearn.preprocessing import StandardScaler
 from ast import literal_eval
-from random import choice
 
 candidate_songs = []
 
@@ -461,14 +460,12 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
         })
     
         def rand_track_genre(main_cat_id, n):                                                                     #implementing the function giving out random songs, with input of number of songs to rate (n) and the chosen main genre (main_cat_id) 
-            genre_ids = list(set(s_genres.loc[s_genres["main_category_id"] == main_cat_id, "genre_id"]))          #constructing a list with all sub genres matching the chosen genre
-            rand_gen_l = [choice(genre_ids) for _ in range(n)]                                                    #creating a list with n randomly chosen sub genres out the just created list
-    
-            p_to_rate = []
-            for g_id in rand_gen_l:                                                                               #for every randomly chosen sub genre we choose one song that has this sub genre in the following lines
-                poss_songs = s_t[s_t["genres_all"].apply(lambda ids: g_id in ids)]                                #we create a list of songs with the current sub genre g_id
-                p_to_rate.append(poss_songs.sample(1))                                                            #one of the songs gets randomly chosen from this list and appended to the list of songs that will be displayed for rating
-            return pd.concat(p_to_rate, ignore_index=True)                                                        #returning the created randomized selection of songs
+            genre_ids = set(s_genres.loc[s_genres["main_category_id"] == main_cat_id, "genre_id"])                #constructing a list with all sub genres matching the chosen genre
+            gen = s_t["genres_all"].apply(lambda ids: any(g in genre_ids for g in ids))                                                  
+
+            poss_songs = s_t[gen]
+            n_sample = min(n, len(poss_songs))
+            return poss_songs.sample(n_sample, replace=False).reset_index(drop=True)
 
         # Generate candidate songs ONCE for the whole group        
         if "candidate_songs" not in st.session_state:
