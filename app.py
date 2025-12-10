@@ -446,7 +446,7 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
             )
         else:
             st.caption(
-                "Please rate these songs. We'll learn what you like and dislike."
+                "Please rate these songs. We'll learn what you like and dislike. You'll find the songs on the freemusicarchive.org webpage"
             )
 
         rater_names = st.session_state.rater_names
