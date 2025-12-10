@@ -20,7 +20,7 @@ candidate_songs = []
 # ---------------------------------------------
 
 def get_conn():                                                     # Define get function to connect with sqlite3
-    return sqlite3.connect(data / "app.db")
+    return sqlite3.connect("data/app.db")
 
 DB = get_conn()                                                     # assign the database to the variable DB
 
