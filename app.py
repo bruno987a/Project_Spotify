@@ -28,7 +28,7 @@ st.set_page_config(
     page_title="Smart Playlist Generator",
     page_icon="🎧",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="expanded",                   #initial sidebar open by default
 )
 
 # -------------------------
@@ -101,7 +101,7 @@ st.markdown(
     }
 
     /* Sidebar steps */
-    .step-label {
+    .step-label {                   /* styling for each step in sidebar */
         padding: 0.35rem 0.5rem;
         border-radius: 0.8rem;
         font-size: 0.95rem;
@@ -109,16 +109,16 @@ st.markdown(
         display: flex;
         align-items: center;
         gap: 0.45rem;
-    }
-    .step-done {
+    }     
+    .step-done {                                         /* green tinted background indicates completed step */
         background: rgba(34, 197, 94, 0.12);
         color: #166534;
     }
-    .step-current {
+    .step-current {                                      /* blue tinted background indicates current step */
         background: rgba(59, 130, 246, 0.12);
         color: #1d4ed8;
     }
-    .step-todo {
+    .step-todo {                                         /* grey tinted background indicates upcoming step */
         background: rgba(148, 163, 184, 0.12);
         color: #475569;
     }
@@ -167,7 +167,7 @@ st.markdown(
     /
     </style>
     """,
-    unsafe_allow_html=True,
+    unsafe_allow_html=True,         #tells Streamlit it’s okay to render this HTML/CSS.
 )
 
 # -------------------------
@@ -242,11 +242,11 @@ def render_sidebar():
 render_sidebar()
 
 
-st.markdown(
+st.markdown(                        #main title
     '<div class="main-title">Smart Playlist Generator</div>',
     unsafe_allow_html=True,
 )
-st.markdown(
+st.markdown(                        #main subtitle
     '<div class="main-subtitle">'
     "Create group playlists that balance everyone’s taste."
     "</div>",
