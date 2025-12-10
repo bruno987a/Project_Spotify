@@ -567,10 +567,10 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
                         # ------------------------------
                         # START MACHINE LEARNING PART 
                         # ------------------------------
-                        features = pd.read_sql("SELECT * FROM features", DB, index_col="track_id")
+                        features = pd.read_sql("SELECT * FROM features", DB, index_col="track_id")          # Read out all the features for every song in the database from table "features"
 
                         feature_cols = [
-                            "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean",
+                            "mfcc_01_mean", "mfcc_02_mean", "mfcc_03_mean", "mfcc_04_mean", "mfcc_05_mean", # define which features are taken into consideration by the algorithm
                             "mfcc_06_mean", "mfcc_07_mean", "mfcc_08_mean", "mfcc_09_mean", "mfcc_10_mean",
                             "rmse_01_mean",
                             "spectral_centroid_01_mean",
