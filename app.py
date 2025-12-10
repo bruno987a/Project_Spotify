@@ -456,15 +456,15 @@ if st.session_state.step >= 3 and st.session_state.criteria_confirmed:
         })
     
         def rand_track_genre(main_cat_id, n):                                                                     #implementing the function giving out random songs, with input of number of songs to rate (n) and the chosen main genre (main_cat_id) 
-            genre_ids = set(s_genres.loc[s_genres["main_category_id"] == main_cat_id, "genre_id"])                #constructing a list with all sub genres matching the chosen genre
-            gen = s_t["genres_all"].apply(lambda ids: any(g in genre_ids for g in ids))                                                  
+            genre_ids = set(s_genres.loc[s_genres["main_category_id"] == main_cat_id, "genre_id"])                #constructing a set with all sub genres matching the chosen genre
+            gen = s_t["genres_all"].apply(lambda ids: any(g in genre_ids for g in ids))                           #boolean mask that has the ability to filter out all songs that have one of the subgrenes g from genre_ids that match the main_cat_id                       
 
-            poss_songs = s_t[gen]
-            return poss_songs.sample(n, replace=False).reset_index(drop=True)
+            poss_songs = s_t[gen]                                                                                 #we filter out a dataframe using our boolean mask gen with all songs having at least one of the sub genres as attribute
+            return poss_songs.sample(n, replace=False).reset_index(drop=True)                                     #n songs get randomly chosen from the poss_songs and returned in a dataframe with a newly set index 0,1,2, ..., n-1
 
         # Generate candidate songs ONCE for the whole group        
         if "candidate_songs" not in st.session_state:
-            st.session_state.candidate_songs = rand_track_genre(st.session_state.chosen_genre, 5)
+            st.session_state.candidate_songs = rand_track_genre(st.session_state.chosen_genre, 5)                #generating a dataframe of five randomly chosen songs and save them in the streamlit session
 
         songs_df = st.session_state.candidate_songs
 
