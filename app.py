@@ -19,7 +19,7 @@ def get_conn():                                                     # Define get
     try:
         conn = sqlite3.connect("data/app.db")
         return conn
-    else:
+    except sqlite3.Error:
         st.error("Database connection failed! Please check, that you downloaded it and left it in the folder 'data'")
 DB = get_conn()                                                     # assign the database to the variable DB
 
