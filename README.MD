@@ -12,4 +12,5 @@ First, the number of users has to be determined. Afterwards, the Music Genre, to
 
 You’ve done it! You can now enjoy your newly created playlist with the whole group.
 
-(You'll find our Contribution matrix and video in the folder additional content)
+(You'll find our Contribution Matrix and video in the folder additional content)
+The files 
