@@ -2,7 +2,7 @@ Welcome to our Song Generator Web application!
 
 Its purpose is to help a group of people of up to 10 people to find a playlist that fits everyone’s music taste. 
 
-After downloading the Project folder in the same structure as provided, the connection to the preloaded database works effortlessly. Apart from the song ratings no further data must be provided by the user(s). Ehile launching the code, please first install the requirements.txt file and then 
+After downloading the Project folder in the same structure as provided, the connection to the preloaded database works effortlessly. Apart from the song ratings no further data must be provided by the user(s). Open a terminal or PowerShell window. Before launching the code navigate to the location you've saved the folder 'Project_Spotify-main' in. Then please first install the requirements.txt file (required packages) and then you can launch the actual application by calling the python-file app.py via streamlit run app.py. Your browser then will automatically launch the application.
 
 To open our Web application on your browser of choice, go to:
 https://projectspotify.streamlit.app/
