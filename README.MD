@@ -10,4 +10,4 @@ It is clearly divided into the four steps where the user can input his or her pr
 
 You’ve done it! You can now enjoy your newly created playlist with the whole group.
 
-(You'll find our Contribution Matrix and video in the folder additional content). The file build_db.py was the function we used to create the database and aren't used in the actual code. The CSV files: genre_with_main_identity.csv, reduced_features.csv and tracks_small.csv were used to build the database.
+You'll find our Contribution Matrix and video in the folder additional content! The file build_db.py was the function we used to create the database and aren't used in the actual code. The CSV files: genre_with_main_identity.csv, reduced_features.csv and tracks_small.csv were used to build the database and are in the data folder as well. Please also take a look at the citations.txt, as we based our project on a dataset that was created in a scientific project.
