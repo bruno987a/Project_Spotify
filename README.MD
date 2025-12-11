@@ -11,3 +11,5 @@ It is clearly divided into the four steps where the user can input his or her pr
 First, the number of users has to be determined. Afterwards, the Music Genre, to which type the Playlist is supposed to belong to, can be chosen. Than, a randomized set of 5 songs out of the database coherent with the selected Music Genre will be generated and displayed for rating. After each user has rated every song between 1 and 5 stars, one can click on the “Generate Final Playlist” Button, and a playlist will be created. It will adhere to the length and music genre chosen, and take all ratings of each member into consideration.
 
 You’ve done it! You can now enjoy your newly created playlist with the whole group.
+
+(You'll find our Contribution matrix and video in the folder additional content)
