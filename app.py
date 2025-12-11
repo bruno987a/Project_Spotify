@@ -16,8 +16,11 @@ from ast import literal_eval
 # ---------------------------------------------
 
 def get_conn():                                                     # Define get function to connect with sqlite3
-    return sqlite3.connect("data/app.db")
-
+    try:
+        conn = sqlite3.connect("data/app.db")
+        return conn
+    else:
+        st.error("Database connection failed! Please check, that you downloaded it and left it in the folder 'data'")
 DB = get_conn()                                                     # assign the database to the variable DB
 
 st.set_page_config(
