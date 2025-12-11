@@ -733,7 +733,7 @@ if st.session_state.step >= 4 and st.session_state.evaluation_done:
             if avg_values:
                 y_pos = np.arange(len(avg_labels))
 
-                # ✨ Define 5 colors (you can change these hex codes as you like)
+                # ✨ Define 5 colors
                 bar_colors = [
                     "#6366F1",  # indigo
                     "#22C55E",  # green
