@@ -1,0 +1,8 @@
+Dataset attribution
+
+This project uses data from "FMA: A Dataset For Music Analysis"
+available at: https://archive.ics.uci.edu/dataset/386/fma+a+dataset+for+music+analysis
+
+Original publication:  
+Defferrard, M., Benzi, K., Vandergheynst, P., & Bresson, X. (2017)
+FMA: A Dataset For Music Analysis
